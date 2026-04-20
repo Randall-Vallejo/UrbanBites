@@ -13,4 +13,7 @@ sealed class NavRoute {
 
     @Serializable
     data object GitHub : NavRoute()
+
+    @Serializable
+    data object Movie : NavRoute()
 }

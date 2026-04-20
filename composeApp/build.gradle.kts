@@ -7,6 +7,9 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 kotlin {
@@ -25,6 +28,14 @@ kotlin {
             isStatic = true
         }
     }
+
+    targets.configureEach {
+        compilations.configureEach {
+            compileTaskProvider.get().compilerOptions {
+                freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
+        }
+    }
     
     sourceSets {
         androidMain.dependencies {
@@ -33,6 +44,12 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.google.maps.compose)
+            implementation(libs.google.play.services.location)
+            
+            implementation(libs.firebase.database)
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.1")
+            implementation(libs.androidx.work.runtime.ktx)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -58,6 +75,11 @@ kotlin {
             implementation(libs.kamel.image)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
+            
+            implementation(libs.compose.material.icons)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -66,6 +88,16 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+    add("kspAndroid", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
 }
 
 android {
@@ -96,5 +128,6 @@ android {
 }
 
 dependencies {
+    implementation(libs.firebase.messaging)
     debugImplementation(libs.compose.uiTooling)
 }
