@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
 
 class LoginViewModel(
     val loginUseCase: DoLoginUseCase
@@ -29,8 +31,12 @@ class LoginViewModel(
     fun onEvent(event: LoginEvent) {
         when(event) {
             LoginEvent.OnClick -> sendLogin()
-            is LoginEvent.OnEmailChanged -> TODO()
-            is LoginEvent.OnPasswordChanged -> TODO()
+            is LoginEvent.OnEmailChanged -> {
+                _state.update { it.copy(email = event.value) }
+            }
+            is LoginEvent.OnPasswordChanged -> {
+                _state.update { it.copy(password = event.value) }
+            }
         }
     }
 

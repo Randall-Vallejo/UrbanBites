@@ -9,6 +9,8 @@ import com.ucb.app.github.data.datasource.GitHubRemoteDataSource
 import com.ucb.app.github.data.repository.GitHubRepositoryImpl
 import com.ucb.app.github.data.service.GitHubService
 import com.ucb.app.github.domain.repository.GitHubRepository
+import com.ucb.app.login.data.repository.AuthenticationRepositoryImpl
+import com.ucb.app.login.domain.repository.AuthenticationRepository
 import com.ucb.app.movie.data.datasource.MovieRemoteDataSource
 import com.ucb.app.movie.data.repository.MovieRepositoryImpl
 import com.ucb.app.movie.data.service.MovieService
@@ -55,4 +57,7 @@ val dataModule = module {
 
     // Firebase
     single { FirebaseManager() }
+
+    // Auth
+    single<AuthenticationRepository> { AuthenticationRepositoryImpl() }
 }
