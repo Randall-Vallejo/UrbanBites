@@ -5,6 +5,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ucb.app.cart.presentation.screen.CartScreen
+import com.ucb.app.cart.presentation.viewmodel.CartViewModel
 import com.ucb.app.country.presentation.screen.CountryScreen
 import com.ucb.app.crypto.presentation.screen.CryptoScreen
 import com.ucb.app.fakestore.presentation.screen.StoreScreen
@@ -13,6 +15,7 @@ import com.ucb.app.github.presentation.screen.GitHubScreen
 import com.ucb.app.maps.presentation.screen.MapScreen
 import com.ucb.app.movie.presentation.screen.MovieScreen
 import kotlinx.coroutines.yield
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppNavHost(destination: String? = null) {
@@ -27,7 +30,7 @@ fun AppNavHost(destination: String? = null) {
         }
     }
 
-    NavHost(navController = navController, startDestination = NavRoute.Notifications) {
+    NavHost(navController = navController, startDestination = NavRoute.Cart) {
         composable<NavRoute.Profile> { }
         composable<NavRoute.ProfileEdit> { }
         composable<NavRoute.Github> {
@@ -50,6 +53,12 @@ fun AppNavHost(destination: String? = null) {
         }
         composable<NavRoute.Notifications> {
             NotificationScreen()
+        }
+        composable<NavRoute.Cart> {
+            // Aquí le pedimos a Koin que nos arme el ViewModel con todo y base de datos
+            val cartViewModel = koinViewModel<CartViewModel>()
+            // Y se lo pasamos a tu pantalla
+            CartScreen(viewModel = cartViewModel)
         }
     }
 }
