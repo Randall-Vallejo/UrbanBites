@@ -36,4 +36,7 @@ sealed class NavRoute {
     object Notifications: NavRoute()
     @Serializable
     data object Login : NavRoute()
+
+    @Serializable
+    object Home : NavRoute()
 }

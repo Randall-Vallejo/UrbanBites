@@ -26,14 +26,12 @@ class LoginViewModel(
 
     fun onEvent(event: LoginEvent) {
         when(event) {
-            // Unificamos el click en una sola llamada
             is LoginEvent.OnClick -> sendLogin()
-
             is LoginEvent.OnEmailChanged -> {
-                _state.update { it.copy(email = event.value) }
+                _state.update { it.copy(email = event.value, error = null) }
             }
             is LoginEvent.OnPasswordChanged -> {
-                _state.update { it.copy(password = event.value) }
+                _state.update { it.copy(password = event.value, error = null) }
             }
         }
     }
@@ -43,11 +41,10 @@ class LoginViewModel(
         val passwordValue = _state.value.password
 
         viewModelScope.launch {
-            // 1. Limpiamos errores previos antes de intentar
             if (emailValue == "admin" && passwordValue == "123") {
-                _state.value = _state.value.copy(isLoggedIn = true, error = null)
+                _state.update { it.copy(isLoggedIn = true, error = null) }
             } else {
-                _state.value = _state.value.copy(error = "Usuario o clave incorrectos")
+                _state.update { it.copy(error = "Usuario o clave incorrectos") }
             }
         }
     }

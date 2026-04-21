@@ -13,6 +13,7 @@ import com.ucb.app.github.presentation.screen.GitHubScreen
 import com.ucb.app.login.presentation.screen.LoginScreen
 import com.ucb.app.maps.presentation.screen.MapScreen
 import com.ucb.app.movie.presentation.screen.MovieScreen
+import urbanbites.com.presentation.home.HomeScreen
 import kotlinx.coroutines.yield
 
 @Composable
@@ -31,6 +32,9 @@ fun AppNavHost(destination: String? = null) {
     NavHost(navController = navController, startDestination = NavRoute.Login) {
         composable<NavRoute.Profile> { }
         composable<NavRoute.ProfileEdit> { }
+        composable<NavRoute.Home> {
+            HomeScreen()
+        }
         composable<NavRoute.Github> {
             GitHubScreen()
         }
@@ -55,8 +59,8 @@ fun AppNavHost(destination: String? = null) {
         composable<NavRoute.Login> {
             LoginScreen(
                 onLoginSuccess = {
-                    navController.navigate(NavRoute.Github) { // Por ahora a Github para probar
-                        popUpTo(NavRoute.Login) { inclusive = true } // Esto evita volver al login con el botón de atrás
+                    navController.navigate(NavRoute.Home) {
+                        popUpTo(NavRoute.Login) { inclusive = true }
                     }
                 }
             )
