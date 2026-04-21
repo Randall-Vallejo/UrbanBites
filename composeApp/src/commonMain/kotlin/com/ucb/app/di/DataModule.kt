@@ -64,14 +64,10 @@ val dataModule = module {
         getDatabaseBuilder().build()
     }
 
-    // Y debajo mantienes exactamente lo que ya habíamos puesto:
-    single { get<AppDatabase>().cartDao() }
-    single { CartRepository(get()) }
-
-
-    // Obtiene el CartDao directamente de tu AppDatabase
+    // Obtiene el CartDao directamente de tu AppDatabase (SOLO DEBE ESTAR UNA VEZ)
     single { get<AppDatabase>().cartDao() }
 
-    // Inyecta el DAO en el Repositorio
+    // Inyecta el DAO en el Repositorio (SOLO DEBE ESTAR UNA VEZ)
     single { CartRepository(get()) }
 }
+

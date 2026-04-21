@@ -22,17 +22,19 @@ fun AppNavHost(destination: String? = null) {
     val navController = rememberNavController()
 
     LaunchedEffect(destination) {
-        if (destination == "github") {
+        if (!destination.isNullOrEmpty()) {
             yield()
-            navController.navigate(NavRoute.Github) {
+            // TODO: Mapear 'destination' a rutas específicas en el futuro.
+            // Por ahora evitamos el hardcodeo redirigiendo a notificaciones.
+            navController.navigate(NavRoute.Notifications) {
                 launchSingleTop = true
             }
         }
     }
 
     NavHost(navController = navController, startDestination = NavRoute.Cart) {
-        composable<NavRoute.Profile> { }
-        composable<NavRoute.ProfileEdit> { }
+       // composable<NavRoute.Profile> { }
+       // composable<NavRoute.ProfileEdit> { }
         composable<NavRoute.Github> {
             GitHubScreen()
         }

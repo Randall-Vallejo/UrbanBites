@@ -22,8 +22,9 @@ class MainActivity : ComponentActivity() {
 
         // Iniciamos el Scheduler de tareas en segundo plano
         MyScheduler(this).start()
-        // Opcional: prueba rápida inmediata
-        MyScheduler(this).runNow()
+
+        // ELIMINADO O COMENTADO:
+        // MyScheduler(this).runNow()
 
         destination = intent.getStringExtra("destination")
 
@@ -31,7 +32,6 @@ class MainActivity : ComponentActivity() {
             App(destination = destination)
         }
     }
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
