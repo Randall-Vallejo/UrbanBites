@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.secrets)
 }
 
 kotlin {
@@ -80,6 +81,8 @@ kotlin {
             implementation(libs.sqlite.bundled)
             
             implementation(libs.compose.material.icons)
+            
+            implementation(project(":design-system"))
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -88,6 +91,10 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "com.ucb.app"
 }
 
 room {
