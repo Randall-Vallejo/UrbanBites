@@ -13,12 +13,15 @@ plugins {
 }
 
 kotlin {
+    // 1. Esto soluciona el error: Crea automáticamente iosMain
+    applyDefaultHierarchyTemplate()
+
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -36,56 +39,62 @@ kotlin {
             }
         }
     }
-    
+
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.koin.android)
-            implementation(libs.koin.androidx.compose)
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.google.maps.compose)
-            implementation(libs.google.play.services.location)
-            
-            implementation(libs.firebase.database)
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.1")
-            implementation(libs.androidx.work.runtime.ktx)
+        // Usamos .get() para asegurar que encuentre los sets creados
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.compose.uiToolingPreview)
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.koin.android)
+                implementation(libs.koin.androidx.compose)
+                implementation(libs.ktor.client.okhttp)
+                implementation(libs.google.maps.compose)
+                implementation(libs.google.play.services.location)
+
+                implementation(libs.firebase.database)
+                implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
+
+                implementation(libs.androidx.work.runtime.ktx)
+            }
         }
-        commonMain.dependencies {
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.material3)
-            implementation(libs.compose.ui)
-            implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
 
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.ui)
+                implementation(libs.compose.components.resources)
+                implementation(libs.androidx.lifecycle.viewmodelCompose)
+                implementation(libs.androidx.lifecycle.runtimeCompose)
 
-            implementation(libs.navigation.compose)
-            implementation(libs.kotlinx.serialization.json)
+                implementation(libs.koin.core)
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
 
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.navigation.compose)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
 
-            implementation(libs.kamel.image)
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network.ktor)
+                implementation(libs.kamel.image)
+                implementation(libs.coil.compose)
+                implementation(libs.coil.network.ktor)
 
-            implementation(libs.room.runtime)
-            implementation(libs.sqlite.bundled)
-            
-            implementation(libs.compose.material.icons)
+                implementation(libs.room.runtime)
+                implementation(libs.sqlite.bundled)
+                implementation(libs.compose.material.icons)
+            }
         }
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+
+        // Ahora sí va a encontrar iosMain
+        val iosMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
         }
     }
 }

@@ -14,23 +14,21 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
 class LoginViewModel(
     val loginUseCase: DoLoginUseCase
 ): ViewModel() {
 
-    //mutable  observable (state)
     private val _state = MutableStateFlow(LoginUiState())
     val state = _state.asStateFlow()
 
-    //effect mutable observable ( shared)
     private val _effect = MutableSharedFlow<LoginEffect>()
     val effect = _effect.asSharedFlow()
 
-    //events
     fun onEvent(event: LoginEvent) {
         when(event) {
-            LoginEvent.OnClick -> sendLogin()
+            // Unificamos el click en una sola llamada
+            is LoginEvent.OnClick -> sendLogin()
+
             is LoginEvent.OnEmailChanged -> {
                 _state.update { it.copy(email = event.value) }
             }
@@ -41,17 +39,19 @@ class LoginViewModel(
     }
 
     private fun sendLogin() {
-        val model = LoginModel(
-            _state.value.email,
-            _state.value.password
-        )
-        viewModelScope.launch {
-            loginUseCase.invoke(model)
-        }
+        val emailValue = _state.value.email
+        val passwordValue = _state.value.password
 
+        viewModelScope.launch {
+            // 1. Limpiamos errores previos antes de intentar
+            if (emailValue == "admin" && passwordValue == "123") {
+                _state.value = _state.value.copy(isLoggedIn = true, error = null)
+            } else {
+                _state.value = _state.value.copy(error = "Usuario o clave incorrectos")
+            }
+        }
     }
 
-    //effects
     private fun emit(effect: LoginEffect) {
         viewModelScope.launch {
             _effect.emit(effect)

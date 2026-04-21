@@ -53,7 +53,13 @@ fun AppNavHost(destination: String? = null) {
             NotificationScreen()
         }
         composable<NavRoute.Login> {
-            LoginScreen()
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(NavRoute.Github) { // Por ahora a Github para probar
+                        popUpTo(NavRoute.Login) { inclusive = true } // Esto evita volver al login con el botón de atrás
+                    }
+                }
+            )
         }
     }
 }
