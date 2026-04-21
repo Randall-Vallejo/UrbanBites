@@ -69,5 +69,8 @@ val dataModule = module {
 
     // Inyecta el DAO en el Repositorio (SOLO DEBE ESTAR UNA VEZ)
     single { CartRepository(get()) }
+
+    // Firebase Remote Config
+    single { com.ucb.app.firebase.data.datasource.RemoteConfigManager() }
 }
 
