@@ -5,36 +5,36 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ucb.app.cart.presentation.screen.CartScreen
+import com.ucb.app.cart.presentation.viewmodel.CartViewModel
 import com.ucb.app.country.presentation.screen.CountryScreen
 import com.ucb.app.crypto.presentation.screen.CryptoScreen
 import com.ucb.app.fakestore.presentation.screen.StoreScreen
 import com.ucb.app.firebase.presentation.screen.NotificationScreen
 import com.ucb.app.github.presentation.screen.GitHubScreen
-import com.ucb.app.login.presentation.screen.LoginScreen
 import com.ucb.app.maps.presentation.screen.MapScreen
 import com.ucb.app.movie.presentation.screen.MovieScreen
-import urbanbites.com.presentation.home.HomeScreen
 import kotlinx.coroutines.yield
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppNavHost(destination: String? = null) {
     val navController = rememberNavController()
 
     LaunchedEffect(destination) {
-        if (destination == "github") {
+        if (!destination.isNullOrEmpty()) {
             yield()
-            navController.navigate(NavRoute.Github) {
+            // TODO: Mapear 'destination' a rutas específicas en el futuro.
+            // Por ahora evitamos el hardcodeo redirigiendo a notificaciones.
+            navController.navigate(NavRoute.Notifications) {
                 launchSingleTop = true
             }
         }
     }
 
-    NavHost(navController = navController, startDestination = NavRoute.Login) {
-        composable<NavRoute.Profile> { }
-        composable<NavRoute.ProfileEdit> { }
-        composable<NavRoute.Home> {
-            HomeScreen()
-        }
+    NavHost(navController = navController, startDestination = NavRoute.Cart) {
+       // composable<NavRoute.Profile> { }
+       // composable<NavRoute.ProfileEdit> { }
         composable<NavRoute.Github> {
             GitHubScreen()
         }
@@ -56,14 +56,11 @@ fun AppNavHost(destination: String? = null) {
         composable<NavRoute.Notifications> {
             NotificationScreen()
         }
-        composable<NavRoute.Login> {
-            LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate(NavRoute.Home) {
-                        popUpTo(NavRoute.Login) { inclusive = true }
-                    }
-                }
-            )
+        composable<NavRoute.Cart> {
+            // Aquí le pedimos a Koin que nos arme el ViewModel con todo y base de datos
+            val cartViewModel = koinViewModel<CartViewModel>()
+            // Y se lo pasamos a tu pantalla
+            CartScreen(viewModel = cartViewModel)
         }
     }
 }

@@ -5,6 +5,7 @@ import com.ucb.app.crypto.data.repository.CryptoRepositoryImpl
 import com.ucb.app.crypto.data.service.CryptoService
 import com.ucb.app.crypto.domain.repository.CryptoRepository
 import com.ucb.app.firebase.data.datasource.FirebaseManager
+import com.ucb.app.firebase.data.datasource.RemoteConfigManager
 import com.ucb.app.github.data.datasource.GitHubRemoteDataSource
 import com.ucb.app.github.data.repository.GitHubRepositoryImpl
 import com.ucb.app.github.data.service.GitHubService
@@ -55,4 +56,5 @@ val dataModule = module {
 
     // Firebase
     single { FirebaseManager() }
+    single { RemoteConfigManager() }
 }
