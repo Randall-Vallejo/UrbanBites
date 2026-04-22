@@ -1,5 +1,8 @@
 package com.ucb.app.di
 
+import com.ucb.app.core.data.db.AppDatabase
+import com.ucb.app.core.data.db.getDatabaseBuilder
+import com.ucb.app.core.data.db.repository.CartRepository
 import com.ucb.app.crypto.data.datasource.CryptoRemoteDatasource
 import com.ucb.app.crypto.data.repository.CryptoRepositoryImpl
 import com.ucb.app.crypto.data.service.CryptoService
@@ -54,7 +57,19 @@ val dataModule = module {
     single<CryptoRemoteDatasource> { CryptoService() }
     single<CryptoRepository> { CryptoRepositoryImpl(get()) }
 
-    // Firebase
+    // Firebase Core & Remote Config
     single { FirebaseManager() }
     single { RemoteConfigManager() }
+
+    // --- Room Database (Traído de la rama de Huayna) ---
+    // Le enseñamos a Koin cómo construir la base de datos principal de Room
+    single<AppDatabase> {
+        getDatabaseBuilder().build()
+    }
+
+    // Obtiene el CartDao directamente de tu AppDatabase
+    single { get<AppDatabase>().cartDao() }
+
+    // Inyecta el DAO en el Repositorio
+    single { CartRepository(get()) }
 }
