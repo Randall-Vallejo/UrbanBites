@@ -1,6 +1,7 @@
 package com.ucb.app.di
 
 import com.ucb.app.crypto.presentation.viewmodel.CryptoViewModel
+import com.ucb.app.dollar.presentation.viewmodel.DollarViewModel
 import com.ucb.app.firebase.presentation.viewmodel.NotificationViewModel
 import com.ucb.app.github.presentation.viewmodel.GitHubViewModel
 import com.ucb.app.movie.presentation.viewmodel.MovieViewModel
@@ -12,4 +13,5 @@ val presentationModule = module {
     viewModelOf(::MovieViewModel)
     viewModelOf(::CryptoViewModel)
     viewModelOf(::NotificationViewModel)
+    viewModelOf(::DollarViewModel)
 }

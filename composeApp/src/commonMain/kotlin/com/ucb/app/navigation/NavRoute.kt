@@ -34,4 +34,7 @@ sealed class NavRoute {
 
     @Serializable
     object Notifications: NavRoute()
+
+    @Serializable
+    object Dollar: NavRoute()
 }

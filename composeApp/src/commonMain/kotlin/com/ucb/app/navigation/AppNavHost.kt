@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ucb.app.country.presentation.screen.CountryScreen
 import com.ucb.app.crypto.presentation.screen.CryptoScreen
+import com.ucb.app.dollar.presentation.screen.DollarScreen
 import com.ucb.app.fakestore.presentation.screen.StoreScreen
 import com.ucb.app.firebase.presentation.screen.NotificationScreen
 import com.ucb.app.github.presentation.screen.GitHubScreen
@@ -27,7 +28,7 @@ fun AppNavHost(destination: String? = null) {
         }
     }
 
-    NavHost(navController = navController, startDestination = NavRoute.Notifications) {
+    NavHost(navController = navController, startDestination = NavRoute.Dollar) {
         composable<NavRoute.Profile> { }
         composable<NavRoute.ProfileEdit> { }
         composable<NavRoute.Github> {
@@ -50,6 +51,9 @@ fun AppNavHost(destination: String? = null) {
         }
         composable<NavRoute.Notifications> {
             NotificationScreen()
+        }
+        composable<NavRoute.Dollar> {
+            DollarScreen()
         }
     }
 }

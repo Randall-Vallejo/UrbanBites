@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class DollarViewModel(
     val useCase: GetDollarListUsecase,
@@ -20,19 +21,29 @@ class DollarViewModel(
     val state = _state.asStateFlow()
 
     init {
-        createDataTest()
         loadData()
     }
 
     fun createDataTest() = viewModelScope.launch {
-        createUseCase.invoke(DollarModel(dollarOfficial = "6.96", dollarParallel = "9.96"))
+        // Simulamos un cambio real con valores aleatorios entre 9.00 y 11.00
+        val randomParallel = (900 + Random.nextInt(200)) / 100.0
+        
+        createUseCase.invoke(
+            DollarModel(
+                dollarOfficial = "6.96", 
+                dollarParallel = randomParallel.toString()
+            )
+        )
+        loadData() // Recargamos la lista para ver el nuevo valor
     }
 
     private fun loadData() {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            val list = useCase.invoke()
             _state.update {
                 it.copy(
-                    list = useCase.invoke(),
+                    list = list.reversed(), // Mostramos el más reciente arriba
                     isLoading = false
                 )
             }
