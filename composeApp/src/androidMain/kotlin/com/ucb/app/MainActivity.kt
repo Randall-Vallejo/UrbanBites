@@ -1,6 +1,5 @@
 package com.ucb.app
 
-import urbanbites.com.App as UrbanBitesApp
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,8 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-
-//import com.ucb.app.core.data.worker.MyScheduler
+import com.ucb.app.core.data.worker.MyScheduler
 
 class MainActivity : ComponentActivity() {
     
@@ -23,14 +21,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Iniciamos el Scheduler de tareas en segundo plano
-       // MyScheduler(this).start()
+        MyScheduler(this).start()
         // Opcional: prueba rápida inmediata
-       // MyScheduler(this).runNow()
+        MyScheduler(this).runNow()
 
         destination = intent.getStringExtra("destination")
 
         setContent {
-            UrbanBitesApp()
+            App(destination = destination)
         }
     }
 
@@ -44,5 +42,5 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun AppAndroidPreview() {
-    UrbanBitesApp()
+    App()
 }
