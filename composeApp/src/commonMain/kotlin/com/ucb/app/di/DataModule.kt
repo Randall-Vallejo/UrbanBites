@@ -13,6 +13,8 @@ import com.ucb.app.github.data.datasource.GitHubRemoteDataSource
 import com.ucb.app.github.data.repository.GitHubRepositoryImpl
 import com.ucb.app.github.data.service.GitHubService
 import com.ucb.app.github.domain.repository.GitHubRepository
+import com.ucb.app.login.data.repository.AuthenticationRepositoryImpl
+import com.ucb.app.login.domain.repository.AuthenticationRepository
 import com.ucb.app.movie.data.datasource.MovieRemoteDataSource
 import com.ucb.app.movie.data.repository.MovieRepositoryImpl
 import com.ucb.app.movie.data.service.MovieService
@@ -61,15 +63,14 @@ val dataModule = module {
     single { FirebaseManager() }
     single { RemoteConfigManager() }
 
-    // --- Room Database (Traído de la rama de Huayna) ---
-    // Le enseñamos a Koin cómo construir la base de datos principal de Room
+    // --- Room Database ---
     single<AppDatabase> {
         getDatabaseBuilder().build()
     }
 
-    // Obtiene el CartDao directamente de tu AppDatabase
     single { get<AppDatabase>().cartDao() }
-
-    // Inyecta el DAO en el Repositorio
     single { CartRepository(get()) }
+
+    // --- Auth ---
+    single<AuthenticationRepository> { AuthenticationRepositoryImpl() }
 }
