@@ -1,13 +1,11 @@
 package com.ucb.app.di
 
-import com.ucb.app.core.data.db.AppDatabase
-import com.ucb.app.core.data.db.getDatabaseBuilder
-import com.ucb.app.core.data.db.repository.CartRepository
 import com.ucb.app.crypto.data.datasource.CryptoRemoteDatasource
 import com.ucb.app.crypto.data.repository.CryptoRepositoryImpl
 import com.ucb.app.crypto.data.service.CryptoService
 import com.ucb.app.crypto.domain.repository.CryptoRepository
 import com.ucb.app.firebase.data.datasource.FirebaseManager
+import com.ucb.app.firebase.data.datasource.RemoteConfigManager
 import com.ucb.app.github.data.datasource.GitHubRemoteDataSource
 import com.ucb.app.github.data.repository.GitHubRepositoryImpl
 import com.ucb.app.github.data.service.GitHubService
@@ -58,19 +56,5 @@ val dataModule = module {
 
     // Firebase
     single { FirebaseManager() }
-
-    // Le enseñamos a Koin cómo construir la base de datos principal de Room
-    single<AppDatabase> {
-        getDatabaseBuilder().build()
-    }
-
-    // Obtiene el CartDao directamente de tu AppDatabase (SOLO DEBE ESTAR UNA VEZ)
-    single { get<AppDatabase>().cartDao() }
-
-    // Inyecta el DAO en el Repositorio (SOLO DEBE ESTAR UNA VEZ)
-    single { CartRepository(get()) }
-
-    // Firebase Remote Config
-    single { com.ucb.app.firebase.data.datasource.RemoteConfigManager() }
+    single { RemoteConfigManager() }
 }
-

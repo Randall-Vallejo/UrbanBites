@@ -49,6 +49,7 @@ kotlin {
             implementation(libs.google.play.services.location)
             
             implementation(libs.firebase.database)
+            implementation(libs.firebase.config)
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.1")
             implementation(libs.androidx.work.runtime.ktx)
             // Firebase Remote Config para Android

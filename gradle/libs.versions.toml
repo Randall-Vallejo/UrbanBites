@@ -27,6 +27,7 @@ composeIcons = "1.7.1"
 googleGmsGoogleServices = "4.4.4"
 firebaseDatabase = "22.0.1"
 firebaseMessaging = "25.0.1"
+firebaseConfig = "22.0.1"
 workRuntimeKtx = "2.11.0"
 kotlinStdlib = "2.1.0"
 runner = "1.5.2"
@@ -83,6 +84,7 @@ google-play-services-location = { module = "com.google.android.gms:play-services
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "composeIconsVersion" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config", version.ref = "firebaseConfig" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
