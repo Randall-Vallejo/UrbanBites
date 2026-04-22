@@ -24,17 +24,14 @@ fun AppNavHost(destination: String? = null) {
     LaunchedEffect(destination) {
         if (!destination.isNullOrEmpty()) {
             yield()
-            // TODO: Mapear 'destination' a rutas específicas en el futuro.
-            // Por ahora evitamos el hardcodeo redirigiendo a notificaciones.
             navController.navigate(NavRoute.Notifications) {
                 launchSingleTop = true
             }
         }
     }
 
-    NavHost(navController = navController, startDestination = NavRoute.Cart) {
-       // composable<NavRoute.Profile> { }
-       // composable<NavRoute.ProfileEdit> { }
+    // Cambiado startDestination de NavRoute.Cart a NavRoute.Notifications para tus pruebas
+    NavHost(navController = navController, startDestination = NavRoute.Notifications) {
         composable<NavRoute.Github> {
             GitHubScreen()
         }
@@ -57,9 +54,7 @@ fun AppNavHost(destination: String? = null) {
             NotificationScreen()
         }
         composable<NavRoute.Cart> {
-            // Aquí le pedimos a Koin que nos arme el ViewModel con todo y base de datos
             val cartViewModel = koinViewModel<CartViewModel>()
-            // Y se lo pasamos a tu pantalla
             CartScreen(viewModel = cartViewModel)
         }
     }
