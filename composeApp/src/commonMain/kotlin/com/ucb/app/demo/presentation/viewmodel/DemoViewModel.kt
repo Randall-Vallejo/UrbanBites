@@ -7,6 +7,7 @@ import com.ucb.app.core.data.db.entity.DemoEntity
 import com.ucb.app.demo.presentation.state.DemoUiState
 import com.ucb.app.firebase.data.datasource.FirebaseManager
 import com.ucb.app.firebase.data.datasource.RemoteConfigManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -47,7 +48,7 @@ class DemoViewModel(
                 database.demoDao().insertDemoItem(
                     DemoEntity(
                         content = content, 
-                        timestamp = 0L // Simplificado para evitar dependencia de kotlinx-datetime
+                        timestamp = 0L 
                     )
                 )
                 _state.update { it.copy(roomInput = "") }
@@ -97,7 +98,16 @@ class DemoViewModel(
         _state.update { it.copy(fcmToken = token) }
     }
     
-    fun setWorkerResult(result: String) {
-        _state.update { it.copy(workerResult = result) }
+    fun runWorkerDemo(action: () -> Unit) {
+        viewModelScope.launch {
+            _state.update { it.copy(workerResult = "Ejecutando...") }
+            try {
+                action()
+                delay(1000) // Simulación visual
+                _state.update { it.copy(workerResult = "Completado correctamente") }
+            } catch (e: Exception) {
+                _state.update { it.copy(workerResult = "Error: ${e.message}") }
+            }
+        }
     }
 }

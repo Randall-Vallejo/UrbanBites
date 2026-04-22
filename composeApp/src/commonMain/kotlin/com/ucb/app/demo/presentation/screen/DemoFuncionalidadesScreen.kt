@@ -90,25 +90,47 @@ fun DemoFuncionalidadesScreen(
                 }
             }
 
-            // 4. NOTIFICACIONES
+            // 4. NOTIFICACIÓN INTERNA
             item {
-                DemoSection(title = "4 & 7. Notificaciones Push & FCM") {
-                    Text("Tu Token FCM (para consola):", fontWeight = FontWeight.Bold)
-                    SelectionContainer {
-                        Text(uiState.fcmToken, fontSize = 10.sp, color = Color.Gray)
-                    }
-                    Button(onClick = onShowLocalNotification, modifier = Modifier.padding(top = 8.dp)) {
+                DemoSection(title = "4. Notificación Interna (Local)") {
+                    Text("Prueba de notificación generada por la app sin servidor externo.")
+                    Button(
+                        onClick = onShowLocalNotification, 
+                        modifier = Modifier.padding(top = 8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                    ) {
                         Text("Lanzar Notificación Local")
                     }
                 }
             }
 
+            // 7. NOTIFICACIÓN EXTERNA (FCM)
+            item {
+                DemoSection(title = "7. Notificación Externa (FCM Push)") {
+                    Text("Token FCM del dispositivo (Cópialo para enviar push):", fontWeight = FontWeight.Bold)
+                    SelectionContainer {
+                        Text(uiState.fcmToken, fontSize = 11.sp, color = Color.Gray, lineHeight = 14.sp)
+                    }
+                    Text(
+                        "Usa este token en Firebase Console para probar envíos externos.",
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
+
             // 5. SERVICIOS SEGUNDO PLANO
             item {
-                DemoSection(title = "5. Worker / Background Services") {
-                    Text("Estado de tarea:", fontWeight = FontWeight.Bold)
-                    Text(uiState.workerResult)
-                    Button(onClick = onRunWorker, modifier = Modifier.padding(top = 8.dp)) {
+                DemoSection(title = "5. Background Services (Worker)") {
+                    Text("Estado actual:", fontWeight = FontWeight.Bold)
+                    val statusColor = when {
+                        uiState.workerResult.contains("Completado") -> Color(0xFF2E7D32)
+                        uiState.workerResult.contains("Error") -> Color.Red
+                        uiState.workerResult.contains("Ejecutando") -> Color(0xFFF57C00)
+                        else -> Color.Gray
+                    }
+                    Text(uiState.workerResult, color = statusColor, fontWeight = FontWeight.Medium)
+                    Button(onClick = { viewModel.runWorkerDemo(onRunWorker) }, modifier = Modifier.padding(top = 8.dp)) {
                         Text("Ejecutar Worker Ahora")
                     }
                 }
@@ -117,7 +139,7 @@ fun DemoFuncionalidadesScreen(
             // 6. TRADUCCIONES
             item {
                 DemoSection(title = "6. Localize (Traducciones)") {
-                    Text("Texto traducido (Res.string.login_btn):", fontWeight = FontWeight.Bold)
+                    Text("Texto obtenido de recursos (Res.string.login_btn):", fontWeight = FontWeight.Bold)
                     Text(stringResource(Res.string.login_btn), fontSize = 20.sp, color = Color(0xFFFF6D00))
                 }
             }
