@@ -1,12 +1,10 @@
 package com.ucb.app.navigation
 
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.ucb.app.cart.presentation.screen.CartScreen
-import com.ucb.app.cart.presentation.viewmodel.CartViewModel
 import com.ucb.app.country.presentation.screen.CountryScreen
 import com.ucb.app.crypto.presentation.screen.CryptoScreen
 import com.ucb.app.demo.presentation.screen.DemoFuncionalidadesScreen
@@ -17,7 +15,6 @@ import com.ucb.app.login.presentation.screen.LoginScreen
 import com.ucb.app.maps.presentation.screen.MapScreen
 import com.ucb.app.movie.presentation.screen.MovieScreen
 import kotlinx.coroutines.yield
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppNavHost(
@@ -54,10 +51,6 @@ fun AppNavHost(
                 fcmToken = fcmToken
             )
         }
-        composable<NavRoute.Home> {
-            // Si HomeScreen no existe en esta rama, ponemos un placeholder para que no falle la compilación
-            Text("Home Screen (No encontrada en esta rama)")
-        }
         composable<NavRoute.Github> { GitHubScreen() }
         composable<NavRoute.Movies> { MovieScreen() }
         composable<NavRoute.Crypto> { CryptoScreen() }
@@ -65,9 +58,5 @@ fun AppNavHost(
         composable<NavRoute.CountryStore> { CountryScreen() }
         composable<NavRoute.Maps> { MapScreen() }
         composable<NavRoute.Notifications> { NotificationScreen() }
-        composable<NavRoute.Cart> {
-            val cartViewModel = koinViewModel<CartViewModel>()
-            CartScreen(viewModel = cartViewModel)
-        }
     }
 }

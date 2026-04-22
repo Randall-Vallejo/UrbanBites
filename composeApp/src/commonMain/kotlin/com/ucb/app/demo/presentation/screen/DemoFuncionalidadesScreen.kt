@@ -12,16 +12,16 @@ import androidx.compose.ui.unit.sp
 import com.ucb.app.demo.presentation.viewmodel.DemoViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import com.ucb.app.Res
-import com.ucb.app.login_btn
+import com.ucb.app.*
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DemoFuncionalidadesScreen(
     viewModel: DemoViewModel = koinViewModel(),
-    onShowLocalNotification: () -> Unit,
-    onRunWorker: () -> Unit,
-    fcmToken: String
+    onShowLocalNotification: () -> Unit = {},
+    onRunWorker: () -> Unit = {},
+    fcmToken: String = ""
 ) {
     val uiState by viewModel.state.collectAsState()
     
@@ -31,7 +31,7 @@ fun DemoFuncionalidadesScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Demo Examen - UrbanBites") })
+            TopAppBar(title = { Text(stringResource(Res.string.demo_title)) })
         }
     ) { padding ->
         LazyColumn(
@@ -43,19 +43,19 @@ fun DemoFuncionalidadesScreen(
         ) {
             // 1. ROOM
             item {
-                DemoSection(title = "1. Room (Persistencia Local)") {
+                DemoSection(title = stringResource(Res.string.room_title)) {
                     OutlinedTextField(
                         value = uiState.roomInput,
                         onValueChange = { viewModel.onRoomInputChange(it) },
-                        label = { Text("Dato para Room") },
+                        label = { Text(stringResource(Res.string.room_input_label)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Row(Modifier.padding(top = 8.dp)) {
-                        Button(onClick = { viewModel.saveToRoom() }) { Text("Guardar") }
+                        Button(onClick = { viewModel.saveToRoom() }) { Text(stringResource(Res.string.save_btn)) }
                         Spacer(Modifier.width(8.dp))
-                        Button(onClick = { viewModel.clearRoom() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) { Text("Limpiar") }
+                        Button(onClick = { viewModel.clearRoom() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) { Text(stringResource(Res.string.clear_btn)) }
                     }
-                    Text("Items en Room:", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+                    Text(stringResource(Res.string.room_items_label), fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
                     uiState.roomItems.forEach { item ->
                         Text("- ${item.content}", fontSize = 14.sp)
                     }
@@ -64,55 +64,55 @@ fun DemoFuncionalidadesScreen(
 
             // 2. FIREBASE REALTIME
             item {
-                DemoSection(title = "2. Firebase Realtime Database") {
+                DemoSection(title = stringResource(Res.string.firebase_realtime_title)) {
                     OutlinedTextField(
                         value = uiState.firebaseInput,
                         onValueChange = { viewModel.onFirebaseInputChange(it) },
-                        label = { Text("Mensaje a Firebase") },
+                        label = { Text(stringResource(Res.string.firebase_input_label)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Button(onClick = { viewModel.saveToFirebase() }, modifier = Modifier.padding(top = 8.dp)) {
-                        Text("Enviar a Realtime")
+                        Text(stringResource(Res.string.send_realtime_btn))
                     }
-                    Text("Último valor (Realtime):", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+                    Text(stringResource(Res.string.firebase_last_value_label), fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
                     Text(uiState.firebaseLastValue, color = Color.Blue)
                 }
             }
 
             // 3. REMOTE CONFIG
             item {
-                DemoSection(title = "3. Firebase Remote Config") {
-                    Text("Valor desde la nube:", fontWeight = FontWeight.Bold)
+                DemoSection(title = stringResource(Res.string.remote_config_title)) {
+                    Text(stringResource(Res.string.cloud_value_label), fontWeight = FontWeight.Bold)
                     Text(uiState.remoteConfigWelcome, fontSize = 18.sp, color = Color(0xFF00796B))
                     Button(onClick = { viewModel.fetchRemoteConfig() }, modifier = Modifier.padding(top = 8.dp)) {
-                        Text("Actualizar Config")
+                        Text(stringResource(Res.string.update_config_btn))
                     }
                 }
             }
 
             // 4. NOTIFICACIÓN INTERNA
             item {
-                DemoSection(title = "4. Notificación Interna (Local)") {
-                    Text("Prueba de notificación generada por la app sin servidor externo.")
+                DemoSection(title = stringResource(Res.string.local_notif_title)) {
+                    Text(stringResource(Res.string.local_notif_desc))
                     Button(
                         onClick = onShowLocalNotification, 
                         modifier = Modifier.padding(top = 8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                     ) {
-                        Text("Lanzar Notificación Local")
+                        Text(stringResource(Res.string.launch_local_notif_btn))
                     }
                 }
             }
 
             // 7. NOTIFICACIÓN EXTERNA (FCM)
             item {
-                DemoSection(title = "7. Notificación Externa (FCM Push)") {
-                    Text("Token FCM del dispositivo (Cópialo para enviar push):", fontWeight = FontWeight.Bold)
-                    SelectionContainer {
+                DemoSection(title = stringResource(Res.string.external_notif_title)) {
+                    Text(stringResource(Res.string.fcm_token_device_label), fontWeight = FontWeight.Bold)
+                    androidx.compose.foundation.text.selection.SelectionContainer {
                         Text(uiState.fcmToken, fontSize = 11.sp, color = Color.Gray, lineHeight = 14.sp)
                     }
                     Text(
-                        "Usa este token en Firebase Console para probar envíos externos.",
+                        stringResource(Res.string.fcm_instructions),
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 8.dp)
                     )
@@ -121,8 +121,8 @@ fun DemoFuncionalidadesScreen(
 
             // 5. SERVICIOS SEGUNDO PLANO
             item {
-                DemoSection(title = "5. Background Services (Worker)") {
-                    Text("Estado actual:", fontWeight = FontWeight.Bold)
+                DemoSection(title = stringResource(Res.string.background_services_title)) {
+                    Text(stringResource(Res.string.current_status_label), fontWeight = FontWeight.Bold)
                     val statusColor = when {
                         uiState.workerResult.contains("Completado") -> Color(0xFF2E7D32)
                         uiState.workerResult.contains("Error") -> Color.Red
@@ -131,15 +131,15 @@ fun DemoFuncionalidadesScreen(
                     }
                     Text(uiState.workerResult, color = statusColor, fontWeight = FontWeight.Medium)
                     Button(onClick = { viewModel.runWorkerDemo(onRunWorker) }, modifier = Modifier.padding(top = 8.dp)) {
-                        Text("Ejecutar Worker Ahora")
+                        Text(stringResource(Res.string.run_worker_btn))
                     }
                 }
             }
 
             // 6. TRADUCCIONES
             item {
-                DemoSection(title = "6. Localize (Traducciones)") {
-                    Text("Texto obtenido de recursos (Res.string.login_btn):", fontWeight = FontWeight.Bold)
+                DemoSection(title = stringResource(Res.string.localize_title)) {
+                    Text(stringResource(Res.string.text_from_resources), fontWeight = FontWeight.Bold)
                     Text(stringResource(Res.string.login_btn), fontSize = 20.sp, color = Color(0xFFFF6D00))
                 }
             }
@@ -155,15 +155,8 @@ fun DemoSection(title: String, content: @Composable ColumnScope.() -> Unit) {
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(title, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            Spacer(Modifier.height(8.dp))
             content()
         }
-    }
-}
-
-@Composable
-fun SelectionContainer(content: @Composable () -> Unit) {
-    androidx.compose.foundation.text.selection.SelectionContainer {
-        content()
     }
 }

@@ -1,18 +1,43 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">UrbanBites</string>
     <string name="explore">Explore</string>
-    <string name="sign_in_title">Sign In</string>
-    <string name="sign_in_email">Email</string>
-    <string name="sign_in_password">Password</string>
-    <string name="sign_in_btn">Sign In</string>
     <string name="login_title">Sign In</string>
     <string name="login_email">Email Address</string>
     <string name="login_password">Password</string>
-    <string name="login_btn">Sign in</string>
+    <string name="login_btn">Sign In</string>
+    <string name="sign_in_title">Sign Up</string>
+    <string name="sign_in_email">Email</string>
+    <string name="sign_in_password">Password</string>
+    <string name="sign_in_btn">Sign Up</string>
     <string name="github_find">Find</string>
     <string name="github_title">Find your Github Avatar</string>
     <string name="github_text_hint">GitHub username</string>
-    <string name="app_name">UrbanBites</string>
-    <string name="add_to_cart">Agregar al carrito</string>
-    <string name="welcome_message">Bienvenido a UrbanBites</string>
+    <string name="add_to_cart">Add to cart</string>
+    <string name="welcome_message">Welcome to UrbanBites</string>
+
+    <!-- Demo Examen Strings -->
+    <string name="demo_title">Exam Demo - UrbanBites</string>
+    <string name="room_title">1. Room (Local Persistence)</string>
+    <string name="room_input_label">Data for Room</string>
+    <string name="save_btn">Save</string>
+    <string name="clear_btn">Clear</string>
+    <string name="room_items_label">Items in Room:</string>
+    <string name="firebase_realtime_title">2. Firebase Realtime Database</string>
+    <string name="firebase_input_label">Message to Firebase</string>
+    <string name="send_realtime_btn">Send to Realtime</string>
+    <string name="firebase_last_value_label">Last value (Realtime):</string>
+    <string name="remote_config_title">3. Firebase Remote Config</string>
+    <string name="cloud_value_label">Value from cloud:</string>
+    <string name="update_config_btn">Update Config</string>
+    <string name="local_notif_title">4. Local Notification (Internal)</string>
+    <string name="local_notif_desc">App-generated notification test without external server.</string>
+    <string name="launch_local_notif_btn">Launch Local Notification</string>
+    <string name="external_notif_title">7. External Notification (FCM Push)</string>
+    <string name="fcm_token_device_label">Device FCM Token (Click to copy):</string>
+    <string name="fcm_instructions">Use this token in Firebase Console to test external sends.</string>
+    <string name="background_services_title">5. Background Services (Worker)</string>
+    <string name="current_status_label">Current status:</string>
+    <string name="run_worker_btn">Run Worker Now</string>
+    <string name="localize_title">6. Localize (Translations)</string>
+    <string name="text_from_resources">Text from resources (Res.string.login_btn):</string>
 </resources>
