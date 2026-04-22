@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import urbanbites.composeapp.generated.resources.Res
-import urbanbites.composeapp.generated.resources.icon_cart
+import com.ucb.app.Res
+import com.ucb.app.icon_cart
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
