@@ -27,7 +27,13 @@ composeIcons = "1.7.1"
 googleGmsGoogleServices = "4.4.4"
 firebaseDatabase = "22.0.1"
 firebaseMessaging = "25.0.1"
+firebaseConfig = "22.0.1"
 workRuntimeKtx = "2.11.0"
+kotlinStdlib = "2.1.0"
+runner = "1.5.2"
+core = "1.5.0"
+composeIconsVersion = "1.7.1"
+secrets = "2.0.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -75,10 +81,14 @@ sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sql
 google-maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "google-maps" }
 google-play-services-location = { module = "com.google.android.gms:play-services-location", version = "21.3.0" }
 
-compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "composeIcons" }
+compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "composeIconsVersion" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config", version.ref = "firebaseConfig" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
+androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -90,3 +100,6 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+android-lint = { id = "com.android.lint", version.ref = "agp" }
+secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }

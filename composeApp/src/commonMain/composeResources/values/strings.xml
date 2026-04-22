@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="explore">Explore</string>
     <string name="sign_in_title">Sign In</string>
@@ -11,4 +12,7 @@
     <string name="github_find">Find</string>
     <string name="github_title">Find your Github Avatar</string>
     <string name="github_text_hint">GitHub username</string>
+    <string name="app_name">UrbanBites</string>
+    <string name="add_to_cart">Agregar al carrito</string>
+    <string name="welcome_message">Bienvenido a UrbanBites</string>
 </resources>

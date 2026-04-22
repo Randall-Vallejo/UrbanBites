@@ -11,11 +11,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.ucb.app.login.presentation.state.LoginEvent
 import com.ucb.app.login.presentation.viewmodel.LoginViewModel
-import urbanbites.composeapp.generated.resources.Res
-import urbanbites.composeapp.generated.resources.login_btn
-import urbanbites.composeapp.generated.resources.login_email
-import urbanbites.composeapp.generated.resources.login_password
-import urbanbites.composeapp.generated.resources.login_title
+import com.ucb.app.Res
+import com.ucb.app.login_btn
+import com.ucb.app.login_email
+import com.ucb.app.login_password
+import com.ucb.app.login_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

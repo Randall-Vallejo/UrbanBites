@@ -11,11 +11,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.ucb.app.signin.presentation.state.SigninEvent
 import com.ucb.app.signin.presentation.viewmodel.SigninViewModel
-import urbanbites.composeapp.generated.resources.Res
-import urbanbites.composeapp.generated.resources.sign_in_btn
-import urbanbites.composeapp.generated.resources.sign_in_email
-import urbanbites.composeapp.generated.resources.sign_in_password
-import urbanbites.composeapp.generated.resources.sign_in_title
+import com.ucb.app.Res
+import com.ucb.app.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

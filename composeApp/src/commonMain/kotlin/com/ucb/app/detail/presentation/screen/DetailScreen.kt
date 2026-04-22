@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ucb.app.detail.presentation.composable.DetailView
 import com.ucb.app.detail.presentation.composable.RankingView
-import urbanbites.composeapp.generated.resources.Res
-import urbanbites.composeapp.generated.resources.imagedetail
+import com.ucb.app.Res
+import com.ucb.app.imagedetail
 
 @Composable
 fun DetailScreen(modifier: Modifier) {
