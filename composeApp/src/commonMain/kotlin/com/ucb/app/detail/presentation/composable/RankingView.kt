@@ -10,8 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.ucb.app.Res
-import com.ucb.app.vd_vector
+import urbanbites.com.Res
+import urbanbites.com.vd_vector
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

@@ -30,8 +30,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucb.app.product_detail.presentation.viewmodel.ProductDetailViewModel
-import com.ucb.app.Res
-import com.ucb.app.*
+import urbanbites.com.Res
+import urbanbites.com.*
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 

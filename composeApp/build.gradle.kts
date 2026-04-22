@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.secrets)
 }
 
 kotlin {
@@ -48,6 +49,9 @@ kotlin {
             implementation(libs.google.play.services.location)
             
             implementation(libs.firebase.database)
+            implementation(libs.firebase.messaging)
+            implementation("com.google.firebase:firebase-config-ktx:22.1.0")
+
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.1")
             implementation(libs.androidx.work.runtime.ktx)
         }
@@ -80,6 +84,9 @@ kotlin {
             implementation(libs.sqlite.bundled)
             
             implementation(libs.compose.material.icons)
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+            
+            implementation(project(":design-system"))
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -88,6 +95,10 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "urbanbites.com"
 }
 
 room {

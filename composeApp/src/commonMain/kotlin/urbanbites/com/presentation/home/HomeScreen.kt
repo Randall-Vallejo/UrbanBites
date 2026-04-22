@@ -3,15 +3,13 @@ package urbanbites.com.presentation.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
@@ -24,8 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
-import urbanbites.composeapp.generated.resources.Res
-import urbanbites.composeapp.generated.resources.burger
+import urbanbites.com.Res
+import urbanbites.com.burger
 
 
 val DarkBackground = Color(0xFF161616)
@@ -198,7 +196,7 @@ fun BottomNavBar() {
             onClick = { }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.List, contentDescription = "Recibos") },
+            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Recibos") },
             selected = false,
             onClick = { }
         )

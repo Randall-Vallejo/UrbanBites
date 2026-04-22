@@ -11,17 +11,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucb.app.demo.presentation.viewmodel.DemoViewModel
 import org.koin.compose.viewmodel.koinViewModel
-import com.ucb.app.Res
-import com.ucb.app.login_btn
+import urbanbites.com.Res
+import urbanbites.com.login_btn
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DemoFuncionalidadesScreen(
     viewModel: DemoViewModel = koinViewModel(),
-    onShowLocalNotification: () -> Unit,
-    onRunWorker: () -> Unit,
-    fcmToken: String
+    onShowLocalNotification: () -> Unit = {},
+    onRunWorker: () -> Unit = {},
+    fcmToken: String = "Obteniendo token..."
 ) {
     val uiState by viewModel.state.collectAsState()
     
@@ -94,7 +94,7 @@ fun DemoFuncionalidadesScreen(
             item {
                 DemoSection(title = "4 & 7. Notificaciones Push & FCM") {
                     Text("Tu Token FCM (para consola):", fontWeight = FontWeight.Bold)
-                    SelectionContainer {
+                    androidx.compose.foundation.text.selection.SelectionContainer {
                         Text(uiState.fcmToken, fontSize = 10.sp, color = Color.Gray)
                     }
                     Button(onClick = onShowLocalNotification, modifier = Modifier.padding(top = 8.dp)) {
@@ -136,12 +136,5 @@ fun DemoSection(title: String, content: @Composable ColumnScope.() -> Unit) {
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             content()
         }
-    }
-}
-
-@Composable
-fun SelectionContainer(content: @Composable () -> Unit) {
-    androidx.compose.foundation.text.selection.SelectionContainer {
-        content()
     }
 }

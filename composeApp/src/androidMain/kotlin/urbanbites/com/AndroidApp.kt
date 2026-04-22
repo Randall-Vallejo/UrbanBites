@@ -4,7 +4,7 @@ import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.logger.Level
-import urbanbites.com.di.initKoin
+import com.ucb.app.di.initKoin // Usamos el original de UCB
 
 class AndroidApp : Application() {
     override fun onCreate() {

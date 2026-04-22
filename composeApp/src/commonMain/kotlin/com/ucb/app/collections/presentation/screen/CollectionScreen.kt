@@ -21,8 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucb.app.collections.presentation.composable.CollectionView
-import com.ucb.app.Res
-import com.ucb.app.*
+import urbanbites.com.Res
+import urbanbites.com.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
