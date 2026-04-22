@@ -1,0 +1,61 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "58a80797491ddc70dadc8fa8a69252b3",
+    "entities": [
+      {
+        "tableName": "dollars",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `official` TEXT NOT NULL, `parallel` TEXT NOT NULL, `usdt` TEXT NOT NULL, `usdc` TEXT NOT NULL, `timestamp` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "official",
+            "columnName": "official",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parallel",
+            "columnName": "parallel",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usdt",
+            "columnName": "usdt",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usdc",
+            "columnName": "usdc",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '58a80797491ddc70dadc8fa8a69252b3')"
+    ]
+  }
+}
