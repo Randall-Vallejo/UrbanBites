@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.google.gms.google.services)
-    alias(libs.plugins.secrets)
 }
 
 kotlin {
@@ -49,11 +48,8 @@ kotlin {
             implementation(libs.google.play.services.location)
             
             implementation(libs.firebase.database)
-            implementation(libs.firebase.config)
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.1")
             implementation(libs.androidx.work.runtime.ktx)
-            // Firebase Remote Config para Android
-            implementation("com.google.firebase:firebase-config-ktx:21.6.3")
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -84,8 +80,6 @@ kotlin {
             implementation(libs.sqlite.bundled)
             
             implementation(libs.compose.material.icons)
-            
-            implementation(project(":design-system"))
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -94,10 +88,6 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
-}
-
-compose.resources {
-    packageOfResClass = "com.ucb.app"
 }
 
 room {

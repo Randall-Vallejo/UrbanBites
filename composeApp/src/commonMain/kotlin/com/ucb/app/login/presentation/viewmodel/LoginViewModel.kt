@@ -26,12 +26,12 @@ class LoginViewModel(
 
     fun onEvent(event: LoginEvent) {
         when(event) {
-            LoginEvent.OnClick -> sendLogin()
+            is LoginEvent.OnClick -> sendLogin()
             is LoginEvent.OnEmailChanged -> {
-                _state.update { it.copy(email = event.value) }
+                _state.update { it.copy(email = event.value, error = null) }
             }
             is LoginEvent.OnPasswordChanged -> {
-                _state.update { it.copy(password = event.value) }
+                _state.update { it.copy(password = event.value, error = null) }
             }
         }
     }
@@ -42,7 +42,7 @@ class LoginViewModel(
 
         viewModelScope.launch {
             if (emailValue == "admin" && passwordValue == "123") {
-                _state.update { it.copy(isLoggedIn = true) }
+                _state.update { it.copy(isLoggedIn = true, error = null) }
             } else {
                 _state.update { it.copy(error = "Usuario o clave incorrectos") }
             }

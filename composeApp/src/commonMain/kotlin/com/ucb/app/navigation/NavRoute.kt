@@ -6,8 +6,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class NavRoute {
 
+
     @Serializable
     object Profile: NavRoute()
+
 
     @Serializable
     object ProfileEdit: NavRoute()
@@ -32,16 +34,9 @@ sealed class NavRoute {
 
     @Serializable
     object Notifications: NavRoute()
+    @Serializable
+    data object Login : NavRoute()
 
     @Serializable
-    object Cart: NavRoute()
-
-    @Serializable
-    object Login: NavRoute()
-
-    @Serializable
-    object Home: NavRoute()
-
-    @Serializable
-    object Demo: NavRoute()
+    object Home : NavRoute()
 }

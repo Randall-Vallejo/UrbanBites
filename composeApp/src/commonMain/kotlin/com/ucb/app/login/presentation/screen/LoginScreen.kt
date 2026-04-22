@@ -1,65 +1,126 @@
 package com.ucb.app.login.presentation.screen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.ucb.app.login.presentation.state.LoginEvent
 import com.ucb.app.login.presentation.viewmodel.LoginViewModel
-import com.ucb.app.Res
-import com.ucb.app.login_btn
-import com.ucb.app.login_email
-import com.ucb.app.login_password
-import com.ucb.app.login_title
-import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
+import urbanbites.composeapp.generated.resources.Res
+import urbanbites.composeapp.generated.resources.urban_bites_logo
 import org.koin.compose.viewmodel.koinViewModel
-
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = koinViewModel(),
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit // Añadido para la navegación
 ) {
     val uiState by viewModel.state.collectAsState()
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
 
+    // Este bloque detecta cuando el ViewModel marca que el login fue exitoso
     LaunchedEffect(uiState.isLoggedIn) {
         if (uiState.isLoggedIn) {
             onLoginSuccess()
         }
     }
 
-    Column {
-        Text(stringResource(Res.string.login_title))
-        if (uiState.error != null) {
-            Text(uiState.error!!, color = androidx.compose.ui.graphics.Color.Red)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF121212))
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Logo UrbanBites
+        Image(
+            painter = painterResource(Res.drawable.urban_bites_logo),
+            contentDescription = null,
+            modifier = Modifier.size(60.dp).align(Alignment.End)
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // Icono de Usuario
+        Box(
+            modifier = Modifier
+                .size(140.dp)
+                .clip(CircleShape)
+                .background(Color.DarkGray),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = null,
+                modifier = Modifier.size(100.dp),
+                tint = Color.LightGray
+            )
         }
-        TextField(
-            onValueChange = {
-                email = it
-                viewModel.onEvent(LoginEvent.OnEmailChanged(it))
-            },
-            value = email,
-            label = {
-                Text(stringResource(Res.string.login_email))
-            }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Campo de Email
+        OutlinedTextField(
+            value = uiState.email,
+            onValueChange = { viewModel.onEvent(LoginEvent.OnEmailChanged(it)) },
+            label = { Text("Correo electrónico / Usuario") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                cursorColor = Color.Black
+            )
         )
-        TextField(
-            onValueChange = {
-                password = it
-                viewModel.onEvent(LoginEvent.OnPasswordChanged(it))
-            },
-            value = password,
-            label = {
-                Text(stringResource(Res.string.login_password))
-            }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Campo de Contraseña
+        OutlinedTextField(
+            value = uiState.password,
+            onValueChange = { viewModel.onEvent(LoginEvent.OnPasswordChanged(it)) },
+            label = { Text("Contraseña") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                cursorColor = Color.Black
+            )
         )
-        Button(onClick = {
-            viewModel.onEvent(LoginEvent.OnClick)
-        }) {
-            Text(stringResource(Res.string.login_btn))
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Mostrar error si existe (Ej. "Usuario no encontrado")
+        if (uiState.error != null) {
+            Text(
+                text = uiState.error!!,
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
+        // Botón Iniciar Sesión
+        Button(
+            onClick = { viewModel.onEvent(LoginEvent.OnClick) },
+            modifier = Modifier.fillMaxWidth().height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF6D00)),
+            shape = RoundedCornerShape(4.dp)
+        ) {
+            Text("INICIAR SESIÓN", color = Color.White)
         }
     }
 }
