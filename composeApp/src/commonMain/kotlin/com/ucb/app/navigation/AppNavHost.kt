@@ -27,7 +27,7 @@ fun AppNavHost(destination: String? = null) {
         }
     }
 
-    NavHost(navController = navController, startDestination = NavRoute.Maps) {
+    NavHost(navController = navController, startDestination = NavRoute.Notifications) {
         composable<NavRoute.Profile> { }
         composable<NavRoute.ProfileEdit> { }
         composable<NavRoute.Github> {
