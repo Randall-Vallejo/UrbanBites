@@ -3,6 +3,7 @@ package com.ucb.app.di
 import com.ucb.app.core.data.db.AppDatabase
 import com.ucb.app.core.data.db.getDatabaseBuilder
 import com.ucb.app.core.data.db.repository.CartRepository
+import com.ucb.app.core.domain.repository.SyncRepository
 import com.ucb.app.crypto.data.datasource.CryptoRemoteDatasource
 import com.ucb.app.crypto.data.repository.CryptoRepositoryImpl
 import com.ucb.app.crypto.data.service.CryptoService
@@ -70,6 +71,7 @@ val dataModule = module {
 
     single { get<AppDatabase>().cartDao() }
     single { CartRepository(get()) }
+    single { SyncRepository(get(), get(), get()) }
 
     // --- Auth ---
     single<AuthenticationRepository> { AuthenticationRepositoryImpl() }

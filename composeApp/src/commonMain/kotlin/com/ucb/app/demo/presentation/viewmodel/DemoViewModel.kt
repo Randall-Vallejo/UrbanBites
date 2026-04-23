@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucb.app.core.data.db.AppDatabase
 import com.ucb.app.core.data.db.entity.DemoEntity
+import com.ucb.app.core.domain.repository.SyncRepository
 import com.ucb.app.demo.presentation.state.DemoUiState
 import com.ucb.app.firebase.data.datasource.FirebaseManager
-import com.ucb.app.firebase.data.datasource.RemoteConfigManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class DemoViewModel(
     private val database: AppDatabase,
     private val firebaseManager: FirebaseManager,
-    private val remoteConfigManager: RemoteConfigManager
+    private val syncRepository: SyncRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DemoUiState())
@@ -25,7 +25,7 @@ class DemoViewModel(
     init {
         observeRoom()
         observeFirebase()
-        fetchRemoteConfig()
+        observeConfigCache()
     }
 
     // --- ROOM ---
@@ -85,12 +85,18 @@ class DemoViewModel(
         }
     }
 
-    // --- REMOTE CONFIG ---
+    // --- REMOTE CONFIG (Ejercicio 1) ---
+    private fun observeConfigCache() {
+        viewModelScope.launch {
+            syncRepository.getWelcomeMessage().collect { msg ->
+                _state.update { it.copy(remoteConfigWelcome = msg) }
+            }
+        }
+    }
+
     fun fetchRemoteConfig() {
         viewModelScope.launch {
-            remoteConfigManager.fetchAndActivate()
-            val msg = remoteConfigManager.getString("welcome_message")
-            _state.update { it.copy(remoteConfigWelcome = msg) }
+            syncRepository.syncRemoteConfig()
         }
     }
 
