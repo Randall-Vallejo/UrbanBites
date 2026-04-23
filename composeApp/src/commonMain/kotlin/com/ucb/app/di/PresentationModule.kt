@@ -1,6 +1,7 @@
 package com.ucb.app.di
 
 import com.ucb.app.cart.presentation.viewmodel.CartViewModel
+import com.ucb.app.core.presentation.viewmodel.ConfigViewModel
 import com.ucb.app.crypto.presentation.viewmodel.CryptoViewModel
 import com.ucb.app.demo.presentation.viewmodel.DemoViewModel
 import com.ucb.app.firebase.presentation.viewmodel.NotificationViewModel
@@ -18,5 +19,6 @@ val presentationModule = module {
     viewModelOf(::NotificationViewModel)
     viewModelOf(::LoginViewModel)
     viewModelOf(::DemoViewModel)
+    viewModelOf(::ConfigViewModel)
     viewModel { CartViewModel(get()) }
 }

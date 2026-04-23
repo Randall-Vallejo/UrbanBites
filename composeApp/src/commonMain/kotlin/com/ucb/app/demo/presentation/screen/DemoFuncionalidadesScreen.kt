@@ -10,6 +10,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucb.app.demo.presentation.viewmodel.DemoViewModel
+import com.ucb.app.core.presentation.viewmodel.ConfigViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import com.ucb.app.Res
 import com.ucb.app.*
@@ -79,14 +80,27 @@ fun DemoFuncionalidadesScreen(
                 }
             }
 
-            // 3. REMOTE CONFIG
+            // 3. REMOTE CONFIG & CACHE (Ejercicio 1)
             item {
-                DemoSection(title = stringResource(Res.string.remote_config_title)) {
-                    Text(stringResource(Res.string.cloud_value_label), fontWeight = FontWeight.Bold)
-                    Text(uiState.remoteConfigWelcome, fontSize = 18.sp, color = Color(0xFF00796B))
-                    Button(onClick = { viewModel.fetchRemoteConfig() }, modifier = Modifier.padding(top = 8.dp)) {
-                        Text(stringResource(Res.string.update_config_btn))
+                val configViewModel: ConfigViewModel = koinViewModel()
+                val configState by configViewModel.state.collectAsState()
+
+                DemoSection(title = "3. Remote Config & Room Cache") {
+                    Text("Valor desde la nube (o caché):", fontWeight = FontWeight.Bold)
+                    if (configState.isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                    } else {
+                        Text(configState.configMessage, fontSize = 18.sp, color = Color(0xFF00796B))
                     }
+                    Button(onClick = { configViewModel.loadConfig() }, modifier = Modifier.padding(top = 8.dp)) {
+                        Text("Sincronizar ahora")
+                    }
+                    Text(
+                        "Nota: Si apagas el internet, mostrará el último valor guardado en Room.",
+                        fontSize = 11.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
                 }
             }
 

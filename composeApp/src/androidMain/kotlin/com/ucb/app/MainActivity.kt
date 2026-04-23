@@ -8,14 +8,20 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ucb.app.core.data.notification.LocalNotificationHelper
 import com.ucb.app.core.data.worker.MyScheduler
+import com.ucb.app.core.domain.repository.EventRepository
+import org.koin.android.ext.android.inject
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     
     private var destination by mutableStateOf<String?>(null)
     private var fcmToken by mutableStateOf("")
+    
+    private val eventRepository: EventRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -24,10 +30,13 @@ class MainActivity : ComponentActivity() {
         val scheduler = MyScheduler(this)
         val notificationHelper = LocalNotificationHelper(this)
 
-        // Iniciamos el Scheduler de tareas en segundo plano
+        // REGISTRO DE EVENTO: ABRIR
+        lifecycleScope.launch {
+            eventRepository.recordEvent("OPEN")
+        }
+
         scheduler.start()
 
-        // Obtener el Token FCM para mostrarlo en la demo
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 fcmToken = task.result
@@ -48,9 +57,20 @@ class MainActivity : ComponentActivity() {
                 },
                 onRunWorker = {
                     scheduler.runNow()
+                    scheduler.syncEventsNow()
                 },
                 fcmToken = fcmToken
             )
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // REGISTRO DE EVENTO: CERRAR
+        // Usamos lifecycleScope para que la corrutina tenga tiempo de ejecutarse antes de que la app muera
+        lifecycleScope.launch {
+            eventRepository.recordEvent("CLOSE")
+            Log.d("EVENT_LOG", "Evento CLOSE registrado en Room")
         }
     }
 
