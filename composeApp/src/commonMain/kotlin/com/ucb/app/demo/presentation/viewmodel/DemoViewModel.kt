@@ -28,7 +28,6 @@ class DemoViewModel(
         observeConfigCache()
     }
 
-    // --- ROOM ---
     private fun observeRoom() {
         viewModelScope.launch {
             database.demoDao().getAllDemoItems().collect { items ->
@@ -62,7 +61,6 @@ class DemoViewModel(
         }
     }
 
-    // --- FIREBASE REALTIME ---
     private fun observeFirebase() {
         viewModelScope.launch {
             firebaseManager.observeData("demo_path").collect { value ->
@@ -85,7 +83,6 @@ class DemoViewModel(
         }
     }
 
-    // --- REMOTE CONFIG (Ejercicio 1) ---
     private fun observeConfigCache() {
         viewModelScope.launch {
             syncRepository.getWelcomeMessage().collect { msg ->
@@ -109,7 +106,7 @@ class DemoViewModel(
             _state.update { it.copy(workerResult = "Ejecutando...") }
             try {
                 action()
-                delay(1000) // Simulación visual
+                delay(1000)
                 _state.update { it.copy(workerResult = "Completado correctamente") }
             } catch (e: Exception) {
                 _state.update { it.copy(workerResult = "Error: ${e.message}") }

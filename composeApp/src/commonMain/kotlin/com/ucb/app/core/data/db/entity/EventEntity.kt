@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 data class EventEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val timestamp: Long,
-    val type: String, // "OPEN" o "CLOSE"
+    val type: String,
     val synced: Boolean = false
 )

@@ -40,7 +40,6 @@ class AndroidApp : Application() {
             override fun onActivityCreated(activity: android.app.Activity, savedInstanceState: Bundle?) {}
             override fun onActivityStarted(activity: android.app.Activity) {
                 if (activityCount == 0) {
-                    // App en primer plano
                     logAppEvent("OPEN")
                 }
                 activityCount++
@@ -50,7 +49,6 @@ class AndroidApp : Application() {
             override fun onActivityStopped(activity: android.app.Activity) {
                 activityCount--
                 if (activityCount == 0) {
-                    // App en segundo plano
                     appScope.launch {
                         syncRepository.logEvent("CLOSE", System.currentTimeMillis())
                         scheduleEventSync()
@@ -66,7 +64,6 @@ class AndroidApp : Application() {
         appScope.launch {
             syncRepository.logEvent(type, System.currentTimeMillis())
             if (type == "OPEN") {
-                // Sincronizar también al abrir para subir lo que quedó pendiente al cerrar
                 scheduleEventSync()
             }
         }
