@@ -9,11 +9,13 @@ import com.ucb.app.core.data.db.dao.NotificationDao
 import com.ucb.app.core.data.db.dao.OrderDao
 import com.ucb.app.core.data.db.dao.ProductDao
 import com.ucb.app.core.data.db.dao.DemoDao
+import com.ucb.app.core.data.db.dao.ConfigDao
 import com.ucb.app.core.data.db.entity.CartItemEntity
 import com.ucb.app.core.data.db.entity.NotificationEntity
 import com.ucb.app.core.data.db.entity.OrderEntity
 import com.ucb.app.core.data.db.entity.ProductEntity
 import com.ucb.app.core.data.db.entity.DemoEntity
+import com.ucb.app.core.data.db.entity.ConfigEntity
 import com.ucb.app.dollar.data.dao.DollarDao
 import com.ucb.app.dollar.data.entity.DollarEntity
 
@@ -24,9 +26,10 @@ import com.ucb.app.dollar.data.entity.DollarEntity
         CartItemEntity::class,
         OrderEntity::class,
         NotificationEntity::class,
-        DemoEntity::class
+        DemoEntity::class,
+        ConfigEntity::class
     ],
-    version = 3
+    version = 4
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -40,8 +43,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun orderDao(): OrderDao
 
     abstract fun notificationDao(): NotificationDao
-
+    
     abstract fun demoDao(): DemoDao
+
+    abstract fun configDao(): ConfigDao
 }
 
 // The Room compiler generates the `actual` implementations.

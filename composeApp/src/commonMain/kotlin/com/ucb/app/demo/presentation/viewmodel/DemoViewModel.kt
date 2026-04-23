@@ -3,6 +3,7 @@ package com.ucb.app.demo.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucb.app.core.data.db.AppDatabase
+import com.ucb.app.core.data.db.entity.ConfigEntity
 import com.ucb.app.core.data.db.entity.DemoEntity
 import com.ucb.app.demo.presentation.state.DemoUiState
 import com.ucb.app.firebase.data.datasource.FirebaseManager
@@ -25,10 +26,38 @@ class DemoViewModel(
     init {
         observeRoom()
         observeFirebase()
-        fetchRemoteConfig()
+        syncWelcomeMessage() // Sincronización inicial
     }
 
-    // --- ROOM ---
+    // --- SINCRONIZACIÓN REMOTE CONFIG + ROOM ---
+    fun syncWelcomeMessage() {
+        viewModelScope.launch {
+            _state.update { it.copy(remoteConfigWelcome = "Sincronizando...") }
+            
+            // 1. Intentamos descargar de Firebase
+            val success = remoteConfigManager.fetchAndActivate()
+            
+            if (success) {
+                // 2. Si hay éxito, obtenemos el valor y guardamos en Room
+                val remoteValue = remoteConfigManager.getString("welcome_message")
+                database.configDao().saveConfig(
+                    ConfigEntity(key = "welcome_message", value = remoteValue, updatedAt = 0L)
+                )
+                _state.update { it.copy(remoteConfigWelcome = remoteValue) }
+            } else {
+                // 3. Si falla (sin internet), buscamos en Room la última versión
+                val cachedConfig = database.configDao().getConfigByKey("welcome_message")
+                val finalValue = cachedConfig?.value ?: "Sin conexión y sin caché"
+                _state.update { it.copy(remoteConfigWelcome = finalValue) }
+            }
+            
+            // Actualizamos el estado visual de la caché local para la demo
+            val local = database.configDao().getConfigByKey("welcome_message")
+            _state.update { it.copy(localConfigValue = local?.value ?: "Vacío") }
+        }
+    }
+
+    // --- ROOM DEMO ---
     private fun observeRoom() {
         viewModelScope.launch {
             database.demoDao().getAllDemoItems().collect { items ->
@@ -46,10 +75,7 @@ class DemoViewModel(
         if (content.isNotBlank()) {
             viewModelScope.launch {
                 database.demoDao().insertDemoItem(
-                    DemoEntity(
-                        content = content, 
-                        timestamp = 0L 
-                    )
+                    DemoEntity(content = content, timestamp = 0L)
                 )
                 _state.update { it.copy(roomInput = "") }
             }
@@ -85,15 +111,6 @@ class DemoViewModel(
         }
     }
 
-    // --- REMOTE CONFIG ---
-    fun fetchRemoteConfig() {
-        viewModelScope.launch {
-            remoteConfigManager.fetchAndActivate()
-            val msg = remoteConfigManager.getString("welcome_message")
-            _state.update { it.copy(remoteConfigWelcome = msg) }
-        }
-    }
-
     fun setFcmToken(token: String) {
         _state.update { it.copy(fcmToken = token) }
     }
@@ -103,7 +120,7 @@ class DemoViewModel(
             _state.update { it.copy(workerResult = "Ejecutando...") }
             try {
                 action()
-                delay(1000) // Simulación visual
+                delay(1000)
                 _state.update { it.copy(workerResult = "Completado correctamente") }
             } catch (e: Exception) {
                 _state.update { it.copy(workerResult = "Error: ${e.message}") }
