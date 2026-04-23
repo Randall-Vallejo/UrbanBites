@@ -86,6 +86,16 @@ class DemoViewModel(
         }
     }
 
+    fun clearAllData() {
+        viewModelScope.launch {
+            database.demoDao().deleteAll()
+            database.eventDao().deleteAll()
+            database.remoteConfigHistoryDao().deleteAll()
+            database.configDao().deleteAll()
+            _state.update { it.copy(cachedWelcomeMessage = "Sin caché") }
+        }
+    }
+
     fun clearRoom() {
         viewModelScope.launch {
             database.demoDao().deleteAll()

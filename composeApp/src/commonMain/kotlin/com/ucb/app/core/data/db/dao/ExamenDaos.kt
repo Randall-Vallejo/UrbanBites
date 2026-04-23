@@ -16,6 +16,9 @@ interface ConfigDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveConfig(config: ConfigEntity)
+
+    @Query("DELETE FROM cached_config")
+    suspend fun deleteAll()
 }
 
 @Dao
@@ -25,6 +28,9 @@ interface RemoteConfigHistoryDao {
 
     @Insert
     suspend fun insertHistory(item: RemoteConfigHistoryEntity)
+
+    @Query("DELETE FROM remote_config_history")
+    suspend fun deleteAll()
 }
 
 @Dao
@@ -34,4 +40,7 @@ interface EventDao {
 
     @Insert
     suspend fun insertEvent(event: EventEntity)
+
+    @Query("DELETE FROM app_events")
+    suspend fun deleteAll()
 }

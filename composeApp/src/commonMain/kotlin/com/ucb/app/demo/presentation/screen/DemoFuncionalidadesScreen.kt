@@ -31,7 +31,14 @@ fun DemoFuncionalidadesScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(stringResource(Res.string.demo_title)) })
+            TopAppBar(
+                title = { Text(stringResource(Res.string.demo_title)) },
+                actions = {
+                    TextButton(onClick = { viewModel.clearAllData() }) {
+                        Text("Limpiar Todo (Room)", color = Color.Red, fontSize = 12.sp)
+                    }
+                }
+            )
         }
     ) { padding ->
         LazyColumn(
@@ -67,7 +74,7 @@ fun DemoFuncionalidadesScreen(
                 }
             }
 
-            // Pregunta 4 (Movida aquí arriba)
+            // Pregunta 4
             item {
                 DemoSection(title = "Pregunta 4") {
                     Text("Eventos registrados en Room:", fontWeight = FontWeight.Bold)
