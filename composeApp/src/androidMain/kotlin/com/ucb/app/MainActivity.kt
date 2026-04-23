@@ -8,9 +8,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ucb.app.core.data.notification.LocalNotificationHelper
 import com.ucb.app.core.data.worker.MyScheduler
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     
@@ -24,10 +27,13 @@ class MainActivity : ComponentActivity() {
         val scheduler = MyScheduler(this)
         val notificationHelper = LocalNotificationHelper(this)
 
-        // Iniciamos el Scheduler de tareas en segundo plano
-        scheduler.start()
+        // Lanzamos el registro de apertura en segundo plano (Punto 2 examen)
+        lifecycleScope.launch {
+            delay(2000) // Esperamos a que Firebase se inicialice bien
+            scheduler.logAppOpenEvent()
+        }
 
-        // Obtener el Token FCM para mostrarlo en la demo
+        // Obtener el Token FCM
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 fcmToken = task.result

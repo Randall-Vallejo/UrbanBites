@@ -3,6 +3,7 @@ package com.ucb.app.demo.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucb.app.core.data.db.AppDatabase
+import com.ucb.app.core.data.db.RemoteConfigHistoryEntity
 import com.ucb.app.core.data.db.entity.DemoEntity
 import com.ucb.app.demo.presentation.state.DemoUiState
 import com.ucb.app.firebase.data.datasource.FirebaseManager
@@ -24,16 +25,45 @@ class DemoViewModel(
 
     init {
         observeRoom()
+        observeEvents()
+        observeConfigHistory()
         observeFirebase()
         fetchRemoteConfig()
+        loadCachedConfig()
     }
 
-    // --- ROOM ---
+    // --- ROOM (Demo Items) ---
     private fun observeRoom() {
         viewModelScope.launch {
             database.demoDao().getAllDemoItems().collect { items ->
                 _state.update { it.copy(roomItems = items) }
             }
+        }
+    }
+
+    // --- ROOM (Events from Background - PREGUNTA 4) ---
+    private fun observeEvents() {
+        viewModelScope.launch {
+            database.eventDao().getAllEvents().collect { events ->
+                _state.update { it.copy(eventItems = events) }
+            }
+        }
+    }
+
+    // --- ROOM (Remote Config History - PREGUNTA 1) ---
+    private fun observeConfigHistory() {
+        viewModelScope.launch {
+            database.remoteConfigHistoryDao().getAllHistory().collect { history ->
+                _state.update { it.copy(configHistory = history) }
+            }
+        }
+    }
+
+    // --- ROOM (Cached Remote Config) ---
+    private fun loadCachedConfig() {
+        viewModelScope.launch {
+            val cachedValue = remoteConfigManager.getCachedValue("welcome_message")
+            _state.update { it.copy(cachedWelcomeMessage = cachedValue) }
         }
     }
 
@@ -88,9 +118,18 @@ class DemoViewModel(
     // --- REMOTE CONFIG ---
     fun fetchRemoteConfig() {
         viewModelScope.launch {
-            remoteConfigManager.fetchAndActivate()
-            val msg = remoteConfigManager.getString("welcome_message")
-            _state.update { it.copy(remoteConfigWelcome = msg) }
+            _state.update { it.copy(remoteConfigWelcome = "Descargando...") }
+            if (remoteConfigManager.fetchAndActivate()) {
+                val msg = remoteConfigManager.getString("welcome_message")
+                _state.update { it.copy(remoteConfigWelcome = msg) }
+                
+                // GUARDAMOS EN EL HISTORIAL DE ROOM (PUNTO 1)
+                database.remoteConfigHistoryDao().insertHistory(
+                    RemoteConfigHistoryEntity(value = msg, timestamp = System.currentTimeMillis())
+                )
+
+                loadCachedConfig() // Actualizamos la vista del caché
+            }
         }
     }
 
@@ -103,7 +142,7 @@ class DemoViewModel(
             _state.update { it.copy(workerResult = "Ejecutando...") }
             try {
                 action()
-                delay(1000) // Simulación visual
+                delay(1000)
                 _state.update { it.copy(workerResult = "Completado correctamente") }
             } catch (e: Exception) {
                 _state.update { it.copy(workerResult = "Error: ${e.message}") }

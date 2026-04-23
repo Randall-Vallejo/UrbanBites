@@ -41,7 +41,54 @@ fun DemoFuncionalidadesScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // 1. ROOM
+            // Pregunta 1
+            item {
+                DemoSection(title = "Pregunta 1") {
+                    Text("Valor actual de la Nube:", fontWeight = FontWeight.Bold)
+                    Text(uiState.remoteConfigWelcome, fontSize = 16.sp, color = Color(0xFF00796B))
+                    
+                    Spacer(Modifier.height(8.dp))
+                    
+                    Text("Ultimo valor guardado de la nube: ${uiState.cachedWelcomeMessage}", fontWeight = FontWeight.Bold)
+                    
+                    Spacer(Modifier.height(8.dp))
+                    
+                    Text("Historial de mensajes en Room:", fontWeight = FontWeight.Bold)
+                    if (uiState.configHistory.isEmpty()) {
+                        Text("No hay historial aún.", fontSize = 12.sp, color = Color.Gray)
+                    }
+                    uiState.configHistory.take(5).forEach { item ->
+                        Text("- ${item.value}", fontSize = 12.sp, color = Color.Gray)
+                    }
+                    
+                    Button(onClick = { viewModel.fetchRemoteConfig() }, modifier = Modifier.padding(top = 8.dp)) {
+                        Text(stringResource(Res.string.update_config_btn))
+                    }
+                }
+            }
+
+            // Pregunta 4 (Movida aquí arriba)
+            item {
+                DemoSection(title = "Pregunta 4") {
+                    Text("Eventos registrados en Room:", fontWeight = FontWeight.Bold)
+                    if (uiState.eventItems.isEmpty()) {
+                        Text("No hay eventos registrados aún.", fontSize = 12.sp, color = Color.Gray)
+                    }
+                    uiState.eventItems.take(5).forEach { event ->
+                        Text("- ${event.type} a las ${event.timestamp}", fontSize = 12.sp)
+                    }
+                    
+                    Spacer(Modifier.height(8.dp))
+                    
+                    Text("Estado del Worker manual:", fontWeight = FontWeight.Bold)
+                    Text(uiState.workerResult, color = Color(0xFFF57C00), fontWeight = FontWeight.Medium)
+                    Button(onClick = { viewModel.runWorkerDemo(onRunWorker) }, modifier = Modifier.padding(top = 8.dp)) {
+                        Text(stringResource(Res.string.run_worker_btn))
+                    }
+                }
+            }
+
+            // OTROS TEMAS (ROOM)
             item {
                 DemoSection(title = stringResource(Res.string.room_title)) {
                     OutlinedTextField(
@@ -79,17 +126,6 @@ fun DemoFuncionalidadesScreen(
                 }
             }
 
-            // 3. REMOTE CONFIG
-            item {
-                DemoSection(title = stringResource(Res.string.remote_config_title)) {
-                    Text(stringResource(Res.string.cloud_value_label), fontWeight = FontWeight.Bold)
-                    Text(uiState.remoteConfigWelcome, fontSize = 18.sp, color = Color(0xFF00796B))
-                    Button(onClick = { viewModel.fetchRemoteConfig() }, modifier = Modifier.padding(top = 8.dp)) {
-                        Text(stringResource(Res.string.update_config_btn))
-                    }
-                }
-            }
-
             // 4. NOTIFICACIÓN INTERNA
             item {
                 DemoSection(title = stringResource(Res.string.local_notif_title)) {
@@ -116,23 +152,6 @@ fun DemoFuncionalidadesScreen(
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 8.dp)
                     )
-                }
-            }
-
-            // 5. SERVICIOS SEGUNDO PLANO
-            item {
-                DemoSection(title = stringResource(Res.string.background_services_title)) {
-                    Text(stringResource(Res.string.current_status_label), fontWeight = FontWeight.Bold)
-                    val statusColor = when {
-                        uiState.workerResult.contains("Completado") -> Color(0xFF2E7D32)
-                        uiState.workerResult.contains("Error") -> Color.Red
-                        uiState.workerResult.contains("Ejecutando") -> Color(0xFFF57C00)
-                        else -> Color.Gray
-                    }
-                    Text(uiState.workerResult, color = statusColor, fontWeight = FontWeight.Medium)
-                    Button(onClick = { viewModel.runWorkerDemo(onRunWorker) }, modifier = Modifier.padding(top = 8.dp)) {
-                        Text(stringResource(Res.string.run_worker_btn))
-                    }
                 }
             }
 

@@ -56,12 +56,13 @@ val dataModule = module {
     single<MovieRepository> { MovieRepositoryImpl(get()) }
 
     // Crypto
-    single<CryptoRemoteDatasource> { CryptoService() }
+    single { CryptoService() }
+    single<CryptoRemoteDatasource> { get<CryptoService>() }
     single<CryptoRepository> { CryptoRepositoryImpl(get()) }
 
-    // Firebase Core & Remote Config
+    // Firebase Core & Managers
     single { FirebaseManager() }
-    single { RemoteConfigManager() }
+    single { RemoteConfigManager(get()) } // Ahora recibe el DAO para caché
 
     // --- Room Database ---
     single<AppDatabase> {
@@ -69,6 +70,9 @@ val dataModule = module {
     }
 
     single { get<AppDatabase>().cartDao() }
+    single { get<AppDatabase>().configDao() }
+    single { get<AppDatabase>().eventDao() }
+
     single { CartRepository(get()) }
 
     // --- Auth ---

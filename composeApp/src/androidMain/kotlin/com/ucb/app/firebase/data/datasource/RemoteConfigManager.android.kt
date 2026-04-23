@@ -1,47 +1,41 @@
 package com.ucb.app.firebase.data.datasource
 
-import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.remoteConfig
-import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.ucb.app.core.data.db.ConfigEntity
+import com.ucb.app.core.data.db.dao.ConfigDao
 import kotlinx.coroutines.tasks.await
 
-actual class RemoteConfigManager actual constructor() {
-    private val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+actual class RemoteConfigManager actual constructor(private val configDao: ConfigDao) {
+    private val remoteConfig: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
 
     init {
-        // Configuramos el tiempo de recarga (0 segundos para desarrollo/pruebas)
-        val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = 0
-        }
+        val configSettings = FirebaseRemoteConfigSettings.Builder()
+            .setMinimumFetchIntervalInSeconds(0) // 0 para ver cambios inmediatos en el examen
+            .build()
         remoteConfig.setConfigSettingsAsync(configSettings)
-
-        // Valores por defecto (Lo que trajo Huayna)
-        remoteConfig.setDefaultsAsync(mapOf(
-            "welcome_message" to "Bienvenido a UrbanBites (Local)"
-        ))
-
-        // Intentar traer datos de la nube inmediatamente
-        remoteConfig.fetchAndActivate()
     }
 
-    // Función genérica de Randall (Súper útil para cualquier llave futura)
     actual suspend fun fetchAndActivate(): Boolean {
         return try {
-            remoteConfig.fetchAndActivate().await()
+            val updated = remoteConfig.fetchAndActivate().await()
+            if (updated) {
+                // Sincronización inicial con caché local: Guardamos en Room lo que bajamos
+                val welcomeMsg = remoteConfig.getString("welcome_message")
+                configDao.saveConfig(ConfigEntity("welcome_message", welcomeMsg))
+            }
+            updated
         } catch (e: Exception) {
             false
         }
     }
 
-    // Función genérica de Randall
     actual fun getString(key: String): String {
-        val value = remoteConfig.getString(key)
-        return if (value.isEmpty()) "Cargando..." else value
+        return remoteConfig.getString(key)
     }
 
-    // Función específica de Huayna (Para no romper sus pantallas)
-    actual fun getWelcomeMessage(): String {
-        return remoteConfig.getString("welcome_message")
+    // Si no hay internet, usamos la última versión guardada en Room
+    actual suspend fun getCachedValue(key: String): String {
+        return configDao.getConfig(key)?.value ?: "Sin caché"
     }
 }

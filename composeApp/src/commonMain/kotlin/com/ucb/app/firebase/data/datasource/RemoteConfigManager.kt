@@ -1,14 +1,10 @@
 package com.ucb.app.firebase.data.datasource
 
-// Definimos el contrato que las plataformas (Android/iOS) deben implementar
-expect class RemoteConfigManager() {
+import com.ucb.app.core.data.db.dao.ConfigDao
+import com.ucb.app.core.data.db.ConfigEntity
 
-    // Función genérica de Randall para obtener cualquier valor
-    fun getString(key: String): String
-
-    // Función para asegurar la descarga de datos
+expect class RemoteConfigManager(configDao: ConfigDao) {
     suspend fun fetchAndActivate(): Boolean
-
-    // Función específica de Huayna para el mensaje de bienvenida
-    fun getWelcomeMessage(): String
+    fun getString(key: String): String
+    suspend fun getCachedValue(key: String): String
 }

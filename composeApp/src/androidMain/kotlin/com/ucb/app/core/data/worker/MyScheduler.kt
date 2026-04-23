@@ -22,7 +22,13 @@ class MyScheduler(private val context: Context) {
         )
     }
 
-    // Método para prueba rápida (ejecuta una vez inmediatamente)
+    // Registra el evento de apertura (Punto 2 del examen)
+    fun logAppOpenEvent() {
+        val request = OneTimeWorkRequestBuilder<EventWorker>().build()
+        WorkManager.getInstance(context).enqueue(request)
+    }
+
+    // Método para prueba rápida del worker genérico
     fun runNow() {
         val request = OneTimeWorkRequestBuilder<MyWorker>().build()
         WorkManager.getInstance(context).enqueue(request)
