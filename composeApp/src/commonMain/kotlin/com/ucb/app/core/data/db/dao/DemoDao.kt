@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DemoDao {
+    @Query("SELECT * FROM demo_items")
+    fun getAllDemoItems(): Flow<List<DemoEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDemoItem(item: DemoEntity)
-
-    @Query("SELECT * FROM demo_items ORDER BY timestamp DESC")
-    fun getAllDemoItems(): Flow<List<DemoEntity>>
 
     @Query("DELETE FROM demo_items")
     suspend fun deleteAll()

@@ -4,42 +4,17 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
-import com.ucb.app.core.data.db.dao.CartDao
-import com.ucb.app.core.data.db.dao.NotificationDao
-import com.ucb.app.core.data.db.dao.OrderDao
-import com.ucb.app.core.data.db.dao.ProductDao
 import com.ucb.app.core.data.db.dao.DemoDao
-import com.ucb.app.core.data.db.entity.CartItemEntity
-import com.ucb.app.core.data.db.entity.NotificationEntity
-import com.ucb.app.core.data.db.entity.OrderEntity
-import com.ucb.app.core.data.db.entity.ProductEntity
 import com.ucb.app.core.data.db.entity.DemoEntity
-import com.ucb.app.dollar.data.dao.DollarDao
-import com.ucb.app.dollar.data.entity.DollarEntity
 
 @Database(
     entities = [
-        DollarEntity::class,
-        ProductEntity::class,
-        CartItemEntity::class,
-        OrderEntity::class,
-        NotificationEntity::class,
         DemoEntity::class
     ],
-    version = 3
+    version = 4
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
-
-    abstract fun dollarDao(): DollarDao
-
-    abstract fun productDao(): ProductDao
-
-    abstract fun cartDao(): CartDao
-
-    abstract fun orderDao(): OrderDao
-
-    abstract fun notificationDao(): NotificationDao
 
     abstract fun demoDao(): DemoDao
 }
