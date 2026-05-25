@@ -2,7 +2,21 @@
 <resources>
     <string name="app_name">UrbanBites</string>
     <string name="explore">Explorar</string>
-    <string name="login_title">Iniciar Sesión</string>
+    <string name="login_title">UrbanBites</string>
+    <string name="login_subtitle">Descubre la mejor comida callejera</string>
+    <string name="login_welcome_title">¡Bienvenido de vuelta!</string>
+    <string name="login_welcome_subtitle">Inicia sesión para explorar food trucks</string>
+    <string name="login_email_label">Correo electrónico</string>
+    <string name="login_email_placeholder">tu@email.com</string>
+    <string name="login_password_label">Contraseña</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="register_button">Registrarse</string>
+    <string name="continue_as_guest">Continuar como invitado</string>
+    <string name="login_empty_email_error">Ingresa tu correo electrónico</string>
+    <string name="login_empty_password_error">Ingresa tu contraseña</string>
+    <string name="login_invalid_credentials_error">Correo o contraseña incorrectos</string>
+    <string name="login_footer">© 2024 UrbanBites · Cochabamba, Bolivia</string>
+
     <string name="login_email">Dirección de Correo</string>
     <string name="login_password">Contraseña</string>
     <string name="login_btn">Iniciar Sesión</string>

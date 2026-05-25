@@ -82,6 +82,7 @@ google-maps-compose = { module = "com.google.maps.android:maps-compose", version
 google-play-services-location = { module = "com.google.android.gms:play-services-location", version = "21.3.0" }
 
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "composeIconsVersion" }
+compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "composeIconsVersion" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config", version.ref = "firebaseConfig" }

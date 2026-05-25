@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ucb.app.demo.presentation.screen.DemoFuncionalidadesScreen
+import com.ucb.app.home.presentation.screen.HomeScreen
 import com.ucb.app.login.presentation.screen.LoginScreen
 import kotlinx.coroutines.yield
 
@@ -31,11 +32,14 @@ fun AppNavHost(
         composable<NavRoute.Login> {
             LoginScreen(
                 onLoginSuccess = {
-                    navController.navigate(NavRoute.Demo) {
+                    navController.navigate(NavRoute.Home) {
                         popUpTo(NavRoute.Login) { inclusive = true }
                     }
                 }
             )
+        }
+        composable<NavRoute.Home> {
+            HomeScreen()
         }
         composable<NavRoute.Demo> {
             DemoFuncionalidadesScreen(

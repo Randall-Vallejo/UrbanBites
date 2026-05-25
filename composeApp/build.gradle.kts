@@ -84,6 +84,7 @@ kotlin {
             implementation(libs.sqlite.bundled)
             
             implementation(libs.compose.material.icons)
+            implementation(libs.compose.material.icons.extended)
             
             implementation(project(":design-system"))
         }

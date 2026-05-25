@@ -2,11 +2,11 @@ package com.ucb.app.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ucb.app.login.domain.model.LoginModel
 import com.ucb.app.login.domain.usecase.DoLoginUseCase
 import com.ucb.app.login.presentation.state.LoginEffect
 import com.ucb.app.login.presentation.state.LoginEvent
 import com.ucb.app.login.presentation.state.LoginUiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -26,25 +26,47 @@ class LoginViewModel(
 
     fun onEvent(event: LoginEvent) {
         when(event) {
-            LoginEvent.OnClick -> sendLogin()
+            LoginEvent.OnLoginClicked -> validateAndLogin()
+            LoginEvent.OnContinueAsGuestClicked -> {
+                emit(LoginEffect.NavigateToHome)
+            }
+            LoginEvent.OnTogglePasswordVisibilityClicked -> {
+                _state.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
+            }
             is LoginEvent.OnEmailChanged -> {
-                _state.update { it.copy(email = event.value) }
+                _state.update { it.copy(email = event.value, error = null) }
             }
             is LoginEvent.OnPasswordChanged -> {
-                _state.update { it.copy(password = event.value) }
+                _state.update { it.copy(password = event.value, error = null) }
             }
         }
     }
 
-    private fun sendLogin() {
-        val emailValue = _state.value.email
-        val passwordValue = _state.value.password
+    private fun validateAndLogin() {
+        val email = _state.value.email
+        val password = _state.value.password
+
+        if (email.isBlank()) {
+            _state.update { it.copy(error = "EMPTY_EMAIL") }
+            return
+        }
+
+        if (password.isBlank()) {
+            _state.update { it.copy(error = "EMPTY_PASSWORD") }
+            return
+        }
 
         viewModelScope.launch {
-            if (emailValue == "admin" && passwordValue == "123") {
-                _state.update { it.copy(isLoggedIn = true) }
+            _state.update { it.copy(isLoading = true, error = null) }
+            
+            // Simulación de carga
+            delay(1500)
+
+            if (email == "admin" && password == "123456") {
+                _state.update { it.copy(isLoading = false, isLoggedIn = true) }
+                emit(LoginEffect.NavigateToHome)
             } else {
-                _state.update { it.copy(error = "Usuario o clave incorrectos") }
+                _state.update { it.copy(isLoading = false, error = "INVALID_CREDENTIALS") }
             }
         }
     }
