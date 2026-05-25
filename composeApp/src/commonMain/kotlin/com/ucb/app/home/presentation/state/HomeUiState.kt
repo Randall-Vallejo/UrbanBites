@@ -1,6 +1,6 @@
 package com.ucb.app.home.presentation.state
 
-import com.ucb.app.home.presentation.screen.FoodTruck
+import com.ucb.app.home.domain.model.FoodTruck
 
 data class HomeUiState(
     val isLoading: Boolean = false,

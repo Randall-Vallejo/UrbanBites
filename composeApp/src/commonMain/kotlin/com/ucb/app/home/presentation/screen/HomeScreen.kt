@@ -1,6 +1,7 @@
 package com.ucb.app.home.presentation.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -16,16 +17,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucb.app.home.presentation.viewmodel.HomeViewModel
+import com.ucb.app.home.domain.model.FoodTruck
 import org.koin.compose.viewmodel.koinViewModel
-import kotlinx.serialization.Serializable
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel(),
+    onTruckClick: (String) -> Unit = {}
 ) {
     val uiState by viewModel.state.collectAsState()
     
@@ -77,7 +80,7 @@ fun HomeScreen(
                 }
 
                 items(uiState.suggestions) { truck ->
-                    FoodTruckCard(truck, orangeColor, lightYellow)
+                    FoodTruckCard(truck, orangeColor, lightYellow, onClick = { onTruckClick(truck.name) })
                 }
 
                 // Near You Section
@@ -89,7 +92,7 @@ fun HomeScreen(
                         modifier = Modifier.padding(bottom = 24.dp)
                     ) {
                         items(uiState.foodTrucks) { truck ->
-                            SmallFoodTruckCard(truck)
+                            SmallFoodTruckCard(truck, onClick = { onTruckClick(truck.name) })
                         }
                     }
                 }
@@ -183,11 +186,12 @@ fun CategoryList() {
 }
 
 @Composable
-fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color) {
+fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -239,7 +243,7 @@ fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(16.dp))
                     Text(" ${truck.rating}", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    Text(" (${truck.reviews})", color = Color.Gray, fontSize = 12.sp)
+                    Text(" (${truck.reviewsCount} reseñas)", color = Color.Gray, fontSize = 12.sp)
                     Spacer(Modifier.width(16.dp))
                     Icon(Icons.Default.LocationOn, null, tint = Color.Gray, modifier = Modifier.size(16.dp))
                     Text(" ${truck.distance}", color = Color.Gray, fontSize = 12.sp)
@@ -250,9 +254,9 @@ fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color) {
 }
 
 @Composable
-fun SmallFoodTruckCard(truck: FoodTruck) {
+fun SmallFoodTruckCard(truck: FoodTruck, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.width(160.dp),
+        modifier = Modifier.width(160.dp).clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -311,15 +315,3 @@ fun UrbanBitesBottomNav(orange: Color) {
         }
     }
 }
-
-@Serializable
-data class FoodTruck(
-    val name: String = "",
-    val category: String = "",
-    val rating: String = "0.0",
-    val reviews: String = "0",
-    val distance: String = "0.0 km",
-    val promoText: String = "",
-    val isPromo: Boolean = false,
-    val isOpen: Boolean = true
-)

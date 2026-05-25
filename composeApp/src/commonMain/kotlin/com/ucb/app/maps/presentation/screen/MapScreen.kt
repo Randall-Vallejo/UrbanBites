@@ -4,4 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-expect fun MapScreen(modifier: Modifier = Modifier)
+expect fun MapScreen(
+    modifier: Modifier = Modifier,
+    latitude: Double? = null,
+    longitude: Double? = null,
+    title: String? = null
+)

@@ -13,5 +13,8 @@ sealed class NavRoute {
     object Home: NavRoute()
 
     @Serializable
+    data class Detail(val truckName: String): NavRoute()
+
+    @Serializable
     object Demo: NavRoute()
 }

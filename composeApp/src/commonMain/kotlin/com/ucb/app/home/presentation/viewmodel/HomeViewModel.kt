@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucb.app.firebase.data.datasource.FirebaseManager
 import com.ucb.app.home.presentation.state.HomeUiState
-import com.ucb.app.home.presentation.screen.FoodTruck
+import com.ucb.app.home.domain.model.FoodTruck
+import com.ucb.app.home.domain.model.MenuDish
+import com.ucb.app.home.domain.model.UserReview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -31,11 +33,9 @@ class HomeViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             
-            firebaseManager.observeData("food_trucks").collect { jsonData ->
-                if (json != null && jsonData != null && jsonData != "null") {
+            firebaseManager.observeData("food_trucks_v3").collect { jsonData ->
+                if (jsonData != null && jsonData != "null") {
                     try {
-                        // En Firebase Realtime, si guardamos una lista, a veces viene como Map o List
-                        // Para simplificar esta demo, asumimos que es una lista codificada como String
                         val trucks = json.decodeFromString<List<FoodTruck>>(jsonData)
                         _state.update { it.copy(
                             foodTrucks = trucks,
@@ -43,11 +43,9 @@ class HomeViewModel(
                             isLoading = false
                         ) }
                     } catch (e: Exception) {
-                        // Si falla el parseo, subimos los datos por defecto (Seeding)
                         seedDatabase()
                     }
                 } else {
-                    // Si no hay datos, sembramos la base de datos
                     seedDatabase()
                 }
             }
@@ -56,18 +54,56 @@ class HomeViewModel(
 
     private fun seedDatabase() {
         val mockTrucks = listOf(
-            FoodTruck("El Chori Loco", "Hamburguesas", "4.8", "234", "0.5 km", "2x1 en clásicas", true),
-            FoodTruck("Pizza del Carrito", "Pizza", "4.6", "122", "1.2 km", "Pizza + Soda", false),
-            FoodTruck("Taco Truck", "Tacos", "4.7", "201", "2.0 km", "5 tacos x 30 Bs", true),
-            FoodTruck("Pollos Copacabana", "Pollo", "4.9", "500", "3.5 km", "Combo Familiar", false)
+            FoodTruck(
+                id = "1",
+                name = "El Chori Loco",
+                category = "Hamburguesas",
+                rating = "4.8",
+                reviewsCount = "234",
+                distance = "0.5 km",
+                promoText = "2x1 en clásicas",
+                isPromo = true,
+                description = "Las mejores hamburguesas artesanales de Cochabamba",
+                latitude = -17.366,
+                longitude = -66.153,
+                menu = listOf(
+                    MenuDish("Hamburguesa Clásica", "25"),
+                    MenuDish("Hamburguesa Especial", "35"),
+                    MenuDish("Papas Fritas", "12")
+                ),
+                userReviews = listOf(
+                    UserReview("Carlos M.", 5, "¡Excelente! La mejor comida callejera."),
+                    UserReview("Ana L.", 4, "Muy bueno, recomendado.")
+                )
+            ),
+            FoodTruck(
+                id = "2",
+                name = "Pizza del Carrito",
+                category = "Pizza",
+                rating = "4.6",
+                reviewsCount = "122",
+                distance = "1.2 km",
+                promoText = "Pizza + Soda",
+                isPromo = false,
+                description = "Pizza artesanal a la leña en movimiento.",
+                latitude = -17.382,
+                longitude = -66.145,
+                menu = listOf(
+                    MenuDish("Pepperoni", "45"),
+                    MenuDish("Margarita", "40")
+                ),
+                userReviews = listOf(
+                    UserReview("Pedro R.", 5, "Delicioso y buen precio.")
+                )
+            )
         )
         
         viewModelScope.launch {
             try {
                 val data = json.encodeToString(mockTrucks)
-                firebaseManager.saveData("food_trucks", data)
+                firebaseManager.saveData("food_trucks_v3", data)
             } catch (e: Exception) {
-                println("Error seeding database: ${e.message}")
+                println("Error seeding: ${e.message}")
             }
         }
     }

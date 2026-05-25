@@ -5,8 +5,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.ucb.app.demo.presentation.screen.DemoFuncionalidadesScreen
 import com.ucb.app.home.presentation.screen.HomeScreen
+import com.ucb.app.home.presentation.screen.FoodTruckDetailScreen
 import com.ucb.app.login.presentation.screen.LoginScreen
 import kotlinx.coroutines.yield
 
@@ -39,7 +41,18 @@ fun AppNavHost(
             )
         }
         composable<NavRoute.Home> {
-            HomeScreen()
+            HomeScreen(
+                onTruckClick = { name ->
+                    navController.navigate(NavRoute.Detail(name))
+                }
+            )
+        }
+        composable<NavRoute.Detail> { backStackEntry ->
+            val detailRoute: NavRoute.Detail = backStackEntry.toRoute()
+            FoodTruckDetailScreen(
+                truckName = detailRoute.truckName,
+                onBack = { navController.popBackStack() }
+            )
         }
         composable<NavRoute.Demo> {
             DemoFuncionalidadesScreen(
