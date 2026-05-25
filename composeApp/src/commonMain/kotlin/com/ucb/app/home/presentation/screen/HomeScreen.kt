@@ -28,9 +28,11 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
     onTruckClick: (String) -> Unit = {},
-    onNavigateToMap: () -> Unit = {}
+    onNavigateToMap: () -> Unit = {},
+    onNavigateToFavorites: () -> Unit = {}
 ) {
     val uiState by viewModel.state.collectAsState()
+    val favorites by viewModel.favorites.collectAsState()
     
     val orangeColor = Color(0xFFFF5722)
     val redColor = Color(0xFFE64A19)
@@ -41,7 +43,8 @@ fun HomeScreen(
             UrbanBitesBottomNav(
                 orange = orangeColor, 
                 currentRoute = "Inicio",
-                onMapClick = onNavigateToMap
+                onMapClick = onNavigateToMap,
+                onFavoritesClick = onNavigateToFavorites
             ) 
         }
     ) { padding ->
@@ -71,7 +74,15 @@ fun HomeScreen(
                 }
 
                 items(uiState.suggestions) { truck ->
-                    FoodTruckCard(truck, orangeColor, lightYellow, onClick = { onTruckClick(truck.name) })
+                    val isFav = favorites.any { it.id == truck.id }
+                    FoodTruckCard(
+                        truck = truck, 
+                        orange = orangeColor, 
+                        promoColor = lightYellow, 
+                        isFavorite = isFav,
+                        onClick = { onTruckClick(truck.name) },
+                        onFavoriteClick = { viewModel.toggleFavorite(truck) }
+                    )
                 }
 
                 item {
@@ -147,7 +158,14 @@ fun CategoryList() {
 }
 
 @Composable
-fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color, onClick: () -> Unit) {
+fun FoodTruckCard(
+    truck: FoodTruck, 
+    orange: Color, 
+    promoColor: Color, 
+    isFavorite: Boolean,
+    onClick: () -> Unit,
+    onFavoriteClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
@@ -176,7 +194,13 @@ fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color, onClick: (
                         Text(truck.name, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                         Text(truck.category, fontSize = 12.sp, color = Color.Gray)
                     }
-                    Icon(Icons.Default.Favorite, null, tint = Color.Red)
+                    IconButton(onClick = onFavoriteClick) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = null,
+                            tint = if (isFavorite) Color.Red else Color.Gray
+                        )
+                    }
                 }
                 if (truck.promoText.isNotBlank()) {
                     Spacer(Modifier.height(12.dp)); Surface(color = promoColor.copy(alpha = 0.5f), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {

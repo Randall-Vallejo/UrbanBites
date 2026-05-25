@@ -30,7 +30,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = koinViewModel(),
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onNavigateToRegister: () -> Unit = {}
 ) {
     val uiState by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
@@ -74,7 +75,7 @@ fun LoginScreen(
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Icon(
-                        imageVector = Icons.Default.Home, // Usamos Home para evitar errores de Restaurant
+                        imageVector = Icons.Default.Home,
                         contentDescription = null,
                         tint = orangeColor,
                         modifier = Modifier.size(40.dp)
@@ -190,6 +191,21 @@ fun LoginScreen(
                         )
                     }
 
+                    if (uiState.error != null) {
+                        val errorText = when (uiState.error) {
+                            "EMPTY_EMAIL" -> "Correo vacío"
+                            "EMPTY_PASSWORD" -> "Contraseña vacía"
+                            "INVALID_CREDENTIALS" -> "Credenciales inválidas"
+                            else -> uiState.error!!
+                        }
+                        Text(
+                            text = errorText,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 8.dp).align(Alignment.Start)
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // Botón Login
@@ -227,9 +243,9 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Botón Registro
+                    // Botón Registro - CORREGIDO: Ahora llama a onNavigateToRegister
                     Button(
-                        onClick = { },
+                        onClick = { onNavigateToRegister() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
@@ -249,7 +265,8 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            TextButton(onClick = { }) {
+            // Opción de Invitado
+            TextButton(onClick = { viewModel.onEvent(LoginEvent.OnContinueAsGuestClicked) }) {
                 Text(
                     text = "Continuar como invitado",
                     color = Color.White,

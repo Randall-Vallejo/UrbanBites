@@ -6,17 +6,21 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import com.ucb.app.core.data.db.dao.DemoDao
 import com.ucb.app.core.data.db.entity.DemoEntity
+import com.ucb.app.home.data.db.dao.FavoriteDao
+import com.ucb.app.home.data.db.entity.FavoriteTruckEntity
 
 @Database(
     entities = [
-        DemoEntity::class
+        DemoEntity::class,
+        FavoriteTruckEntity::class
     ],
-    version = 4
+    version = 5
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun demoDao(): DemoDao
+    abstract fun favoriteDao(): FavoriteDao
 }
 
 // The Room compiler generates the `actual` implementations.

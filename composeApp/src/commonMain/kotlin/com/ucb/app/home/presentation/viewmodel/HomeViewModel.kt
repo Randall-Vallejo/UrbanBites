@@ -7,15 +7,16 @@ import com.ucb.app.home.presentation.state.HomeUiState
 import com.ucb.app.home.domain.model.FoodTruck
 import com.ucb.app.home.domain.model.MenuDish
 import com.ucb.app.home.domain.model.UserReview
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.ucb.app.home.data.db.dao.FavoriteDao
+import com.ucb.app.home.data.db.entity.FavoriteTruckEntity
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class HomeViewModel(
-    private val firebaseManager: FirebaseManager
+    private val firebaseManager: FirebaseManager,
+    private val favoriteDao: FavoriteDao
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeUiState())
     val state = _state.asStateFlow()
@@ -29,6 +30,9 @@ class HomeViewModel(
         coerceInputValues = true
     }
 
+    val favorites = favoriteDao.getAllFavorites()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     init {
         observeFoodTrucks()
     }
@@ -36,9 +40,7 @@ class HomeViewModel(
     private fun observeFoodTrucks() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            
-            // Escuchamos la versión 3 de la BD que tiene todos los campos
-            firebaseManager.observeData("food_trucks_v3").collect { jsonData ->
+            firebaseManager.observeData("food_truck_v3").collect { jsonData ->
                 if (jsonData != null && jsonData != "null") {
                     try {
                         val trucks = json.decodeFromString<List<FoodTruck>>(jsonData)
@@ -50,6 +52,26 @@ class HomeViewModel(
                 } else {
                     seedDatabase()
                 }
+            }
+        }
+    }
+
+    fun toggleFavorite(truck: FoodTruck) {
+        viewModelScope.launch {
+            val isFav = favoriteDao.isFavorite(truck.id).first()
+            if (isFav) {
+                favoriteDao.deleteById(truck.id)
+            } else {
+                favoriteDao.insertFavorite(
+                    FavoriteTruckEntity(
+                        id = truck.id,
+                        name = truck.name,
+                        category = truck.category,
+                        rating = truck.rating,
+                        distance = truck.distance,
+                        isOpen = truck.isOpen
+                    )
+                )
             }
         }
     }
@@ -66,22 +88,12 @@ class HomeViewModel(
 
     private fun applyFilters() {
         var filtered = allTrucks
-        
-        // 1. Filtrar por Categoría
         if (!selectedCategory.isNullOrBlank()) {
-            filtered = filtered.filter { 
-                it.category.equals(selectedCategory, ignoreCase = true) 
-            }
+            filtered = filtered.filter { it.category.equals(selectedCategory, ignoreCase = true) }
         }
-        
-        // 2. Filtrar por Nombre (Buscador)
         if (searchQuery.isNotBlank()) {
-            filtered = filtered.filter { 
-                it.name.contains(searchQuery, ignoreCase = true) 
-            }
+            filtered = filtered.filter { it.name.contains(searchQuery, ignoreCase = true) }
         }
-
-        // Actualizamos el estado para que la UI (Mapa y Lista) se refresquen
         _state.update { it.copy(
             foodTrucks = filtered,
             suggestions = allTrucks.filter { it.isPromo },
@@ -134,11 +146,10 @@ class HomeViewModel(
                 )
             )
         )
-        
         viewModelScope.launch {
             try {
                 val data = json.encodeToString(mockTrucks)
-                firebaseManager.saveData("food_trucks_v3", data)
+                firebaseManager.saveData("food_truck_v3", data)
             } catch (e: Exception) {
                 println("Error seeding: ${e.message}")
             }

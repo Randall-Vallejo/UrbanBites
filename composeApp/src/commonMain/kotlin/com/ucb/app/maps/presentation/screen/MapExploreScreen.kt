@@ -28,6 +28,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun MapExploreScreen(
     onBack: () -> Unit,
     onTruckClick: (String) -> Unit,
+    onNavigateToFavorites: () -> Unit,
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.state.collectAsState()
@@ -41,13 +42,13 @@ fun MapExploreScreen(
                 orange = orangeColor,
                 currentRoute = "Mapa",
                 onHomeClick = onBack,
-                onMapClick = {}
+                onFavoritesClick = onNavigateToFavorites
             )
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             
-            // 1. EL MAPA REAL (Fondo) - Muestra los trucks filtrados
+            // 1. EL MAPA REAL
             MapScreen(
                 modifier = Modifier.fillMaxSize(),
                 trucks = uiState.foodTrucks,
@@ -68,13 +69,13 @@ fun MapExploreScreen(
                             Spacer(Modifier.width(12.dp))
                             androidx.compose.foundation.text.BasicTextField(
                                 value = searchQuery,
-                                onValueChange = {
+                                onValueChange = { 
                                     searchQuery = it
-                                    viewModel.searchTrucks(it) // FILTRADO POR TEXTO
+                                    viewModel.searchTrucks(it)
                                 },
                                 modifier = Modifier.weight(1f),
                                 decorationBox = { innerTextField ->
-                                    if (searchQuery.isEmpty()) Text("Buscar por nombre...", color = Color.LightGray, fontSize = 14.sp)
+                                    if (searchQuery.isEmpty()) Text("Buscar en el mapa...", color = Color.LightGray, fontSize = 14.sp)
                                     innerTextField()
                                 }
                             )
@@ -90,7 +91,7 @@ fun MapExploreScreen(
                 }
             }
 
-            // 3. TARJETA INFERIOR (Cercanos / Filtrados)
+            // 3. TARJETA INFERIOR
             Surface(
                 modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp).fillMaxWidth().heightIn(max = 280.dp),
                 shape = RoundedCornerShape(24.dp),
@@ -100,44 +101,34 @@ fun MapExploreScreen(
                 Column(Modifier.padding(16.dp)) {
                     Box(Modifier.width(40.dp).height(4.dp).background(Color.LightGray, CircleShape).align(Alignment.CenterHorizontally))
                     Spacer(Modifier.height(16.dp))
-                    Text(
-                        if (searchQuery.isEmpty()) "Food trucks cercanos" else "Resultados de búsqueda",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
-                    )
+                    Text("Food trucks cercanos", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     Spacer(Modifier.height(12.dp))
                     
-                    if (uiState.foodTrucks.isEmpty()) {
-                        Box(Modifier.fillMaxWidth().height(100.dp), contentAlignment = Alignment.Center) {
-                            Text("No se encontraron resultados", color = Color.Gray)
-                        }
-                    } else {
-                        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            items(uiState.foodTrucks) { truck ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().clickable { onTruckClick(truck.name) }.padding(vertical = 4.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Box(Modifier.size(50.dp).clip(RoundedCornerShape(10.dp)).background(Color(0xFFF5F5F5))) {
-                                        Icon(Icons.Default.Fastfood, null, Modifier.align(Alignment.Center).size(24.dp), Color.Gray)
-                                    }
-                                    Spacer(Modifier.width(16.dp))
-                                    Column(Modifier.weight(1f)) {
-                                        Text(truck.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(14.dp))
-                                            Text(" ${truck.rating} • ${truck.distance}", fontSize = 12.sp, color = Color.Gray)
-                                        }
-                                    }
-                                    Icon(Icons.Default.ArrowForwardIos, null, Modifier.size(14.dp), Color.LightGray)
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(uiState.foodTrucks) { truck ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth().clickable { onTruckClick(truck.name) }.padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(Modifier.size(50.dp).clip(RoundedCornerShape(10.dp)).background(Color(0xFFF5F5F5))) {
+                                    Icon(Icons.Default.Fastfood, null, Modifier.align(Alignment.Center).size(24.dp), Color.Gray)
                                 }
+                                Spacer(Modifier.width(16.dp))
+                                Column(Modifier.weight(1f)) {
+                                    Text(truck.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(14.dp))
+                                        Text(" ${truck.rating} • ${truck.distance}", fontSize = 12.sp, color = Color.Gray)
+                                    }
+                                }
+                                Icon(Icons.Default.ArrowForwardIos, null, Modifier.size(14.dp), Color.LightGray)
                             }
                         }
                     }
                 }
             }
 
-            // 4. DIÁLOGO DE FILTROS REAL
+            // 4. DIÁLOGO DE FILTROS
             if (showFilters) {
                 AlertDialog(
                     onDismissRequest = { showFilters = false },
@@ -152,8 +143,8 @@ fun MapExploreScreen(
                             val categories = listOf("Todos", "Hamburguesas", "Pizza", "Pollo", "Tacos", "Bebidas")
                             categories.forEach { cat ->
                                 SuggestionChip(
-                                    onClick = {
-                                        viewModel.filterByCategory(if (cat == "Todos") null else cat) // FILTRADO POR CATEGORÍA
+                                    onClick = { 
+                                        viewModel.filterByCategory(if (cat == "Todos") null else cat)
                                         showFilters = false
                                     },
                                     label = { Text(cat) }

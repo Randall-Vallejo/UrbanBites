@@ -17,15 +17,9 @@ val dataModule = module {
     single {
         HttpClient {
             expectSuccess = true
-
             install(ContentNegotiation) {
-                json(
-                    Json {
-                        ignoreUnknownKeys = true
-                    }
-                )
+                json(Json { ignoreUnknownKeys = true })
             }
-
             install(HttpTimeout) {
                 requestTimeoutMillis = 15000
             }
@@ -40,6 +34,8 @@ val dataModule = module {
     single<AppDatabase> {
         getDatabaseBuilder().build()
     }
+    
+    single { get<AppDatabase>().favoriteDao() }
 
     // --- Auth ---
     single<AuthenticationRepository> { AuthenticationRepositoryImpl() }

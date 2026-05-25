@@ -43,8 +43,8 @@ class LoginViewModel(
     }
 
     private fun validateAndLogin() {
-        val email = _state.value.email
-        val password = _state.value.password
+        val email = _state.value.email.trim()
+        val password = _state.value.password.trim()
 
         if (email.isBlank()) {
             _state.update { it.copy(error = "EMPTY_EMAIL") }
@@ -59,10 +59,10 @@ class LoginViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             
-            // Simulación de carga
-            delay(1500)
+            delay(1000)
 
-            if (email == "admin" && password == "123456") {
+            // Credenciales oficiales de UrbanBites - Ahora más flexibles
+            if ((email == "admin" || email == "admin@urbanbites.com") && password == "123456") {
                 _state.update { it.copy(isLoading = false, isLoggedIn = true) }
                 emit(LoginEffect.NavigateToHome)
             } else {

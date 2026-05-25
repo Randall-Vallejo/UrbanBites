@@ -9,7 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.LocationSearching
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,18 +38,16 @@ actual fun MapScreen(
     
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
     
-    // Posición inicial: Si me dan una específica (detalle), la uso. Si no (mapa general), centro en Cbba.
     val initialPos = if (centerLatitude != null && centerLongitude != null) {
         LatLng(centerLatitude, centerLongitude)
     } else {
-        LatLng(-17.3833, -66.15) // Cochabamba Centro
+        LatLng(-17.3833, -66.15) 
     }
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(initialPos, 14f)
     }
 
-    // Si el centro cambia (porque el usuario eligió otro truck), movemos la cámara
     LaunchedEffect(centerLatitude, centerLongitude) {
         if (centerLatitude != null && centerLongitude != null) {
             cameraPositionState.animate(
@@ -76,7 +74,6 @@ actual fun MapScreen(
             cameraPositionState = cameraPositionState,
             uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = false)
         ) {
-            // PINES DE TODOS LOS FOOD TRUCKS
             trucks.forEach { truck ->
                 Marker(
                     state = MarkerState(position = LatLng(truck.latitude, truck.longitude)),
@@ -89,7 +86,6 @@ actual fun MapScreen(
                 )
             }
 
-            // PIN DEL USUARIO
             userLocation?.let {
                 Marker(
                     state = MarkerState(position = it),
@@ -99,7 +95,6 @@ actual fun MapScreen(
             }
         }
 
-        // Botón Mi Ubicación (Diseño UrbanBites)
         SmallFloatingActionButton(
             onClick = {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -114,11 +109,11 @@ actual fun MapScreen(
                     permissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
                 }
             },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 100.dp, end = 16.dp), // Subimos el botón para que no lo tape la tarjeta inferior
+            modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 100.dp, end = 16.dp),
             containerColor = Color.White,
             contentColor = Color(0xFFFF5722)
         ) {
-            Icon(Icons.Default.MyLocation, contentDescription = "Mi Ubicación")
+            Icon(Icons.Default.LocationSearching, contentDescription = "Mi Ubicación")
         }
     }
 }

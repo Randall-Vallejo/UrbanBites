@@ -9,8 +9,10 @@ import androidx.navigation.toRoute
 import com.ucb.app.demo.presentation.screen.DemoFuncionalidadesScreen
 import com.ucb.app.home.presentation.screen.HomeScreen
 import com.ucb.app.home.presentation.screen.FoodTruckDetailScreen
+import com.ucb.app.home.presentation.screen.FavoritesScreen
 import com.ucb.app.maps.presentation.screen.MapExploreScreen
 import com.ucb.app.login.presentation.screen.LoginScreen
+import com.ucb.app.login.presentation.screen.RegisterScreen
 import kotlinx.coroutines.yield
 
 @Composable
@@ -38,6 +40,21 @@ fun AppNavHost(
                     navController.navigate(NavRoute.Home) {
                         popUpTo(NavRoute.Login) { inclusive = true }
                     }
+                },
+                onNavigateToRegister = {
+                    navController.navigate(NavRoute.Register)
+                }
+            )
+        }
+        composable<NavRoute.Register> {
+            RegisterScreen(
+                onRegisterSuccess = {
+                    navController.navigate(NavRoute.Home) {
+                        popUpTo(NavRoute.Login) { inclusive = true }
+                    }
+                },
+                onBack = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -48,6 +65,9 @@ fun AppNavHost(
                 },
                 onNavigateToMap = {
                     navController.navigate(NavRoute.Map)
+                },
+                onNavigateToFavorites = {
+                    navController.navigate(NavRoute.Favorites)
                 }
             )
         }
@@ -56,7 +76,19 @@ fun AppNavHost(
                 onBack = { navController.popBackStack() },
                 onTruckClick = { name ->
                     navController.navigate(NavRoute.Detail(name))
+                },
+                onNavigateToFavorites = {
+                    navController.navigate(NavRoute.Favorites)
                 }
+            )
+        }
+        composable<NavRoute.Favorites> {
+            FavoritesScreen(
+                onTruckClick = { name ->
+                    navController.navigate(NavRoute.Detail(name))
+                },
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToMap = { navController.navigate(NavRoute.Map) }
             )
         }
         composable<NavRoute.Detail> { backStackEntry ->
