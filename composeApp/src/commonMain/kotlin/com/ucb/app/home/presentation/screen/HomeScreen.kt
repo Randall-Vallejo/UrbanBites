@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,7 +27,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
-    onTruckClick: (String) -> Unit = {}
+    onTruckClick: (String) -> Unit = {},
+    onNavigateToMap: () -> Unit = {}
 ) {
     val uiState by viewModel.state.collectAsState()
     
@@ -37,7 +37,13 @@ fun HomeScreen(
     val lightYellow = Color(0xFFFFF9C4)
 
     Scaffold(
-        bottomBar = { UrbanBitesBottomNav(orangeColor) }
+        bottomBar = { 
+            UrbanBitesBottomNav(
+                orange = orangeColor, 
+                currentRoute = "Inicio",
+                onMapClick = onNavigateToMap
+            ) 
+        }
     ) { padding ->
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -50,18 +56,8 @@ fun HomeScreen(
                     .padding(padding)
                     .background(Color(0xFFF8F8F8))
             ) {
-                // Header Section
-                item {
-                    HeaderSection(uiState.userName, orangeColor, redColor)
-                }
-
-                // Categories Section
-                item {
-                    SectionTitle("Categorías")
-                    CategoryList()
-                }
-
-                // Suggestions Section
+                item { HeaderSection(uiState.userName, orangeColor, redColor) }
+                item { SectionTitle("Categorías"); CategoryList() }
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -69,12 +65,7 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         SectionTitle("Sugerencias para ti", paddingValues = PaddingValues(0.dp))
-                        Icon(
-                            imageVector = Icons.Default.Whatshot,
-                            contentDescription = null,
-                            tint = Color.Red,
-                            modifier = Modifier.size(20.dp)
-                        )
+                        Icon(Icons.Default.Whatshot, null, tint = Color.Red, modifier = Modifier.size(20.dp))
                     }
                     Spacer(Modifier.height(8.dp))
                 }
@@ -83,7 +74,6 @@ fun HomeScreen(
                     FoodTruckCard(truck, orangeColor, lightYellow, onClick = { onTruckClick(truck.name) })
                 }
 
-                // Near You Section
                 item {
                     SectionTitle("Cerca de ti")
                     LazyRow(
@@ -124,25 +114,15 @@ fun HeaderSection(userName: String, orange: Color, red: Color) {
                     onClick = {},
                     modifier = Modifier.background(Color.White.copy(alpha = 0.2f), CircleShape)
                 ) {
-                    Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
+                    Icon(Icons.Default.Notifications, null, tint = Color.White)
                 }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
-
-            // Search Bar
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = Color.White
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray)
+            Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), color = Color.White) {
+                Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Search, null, tint = Color.Gray)
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text("Buscar food trucks, comidas...", color = Color.LightGray, fontSize = 14.sp)
+                    Text("Buscar food trucks...", color = Color.LightGray, fontSize = 14.sp)
                 }
             }
         }
@@ -151,35 +131,16 @@ fun HeaderSection(userName: String, orange: Color, red: Color) {
 
 @Composable
 fun SectionTitle(title: String, paddingValues: PaddingValues = PaddingValues(16.dp)) {
-    Text(
-        text = title,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
-        color = Color(0xFF333333),
-        modifier = Modifier.padding(paddingValues)
-    )
+    Text(title, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF333333), modifier = Modifier.padding(paddingValues))
 }
 
 @Composable
 fun CategoryList() {
     val categories = listOf("Hamburguesas", "Pizza", "Pollo", "Tacos", "Postres")
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(categories) { category ->
-            Surface(
-                shape = RoundedCornerShape(20.dp),
-                color = Color.White,
-                tonalElevation = 2.dp,
-                modifier = Modifier.padding(vertical = 4.dp)
-            ) {
-                Text(
-                    text = category,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    fontSize = 14.sp,
-                    color = Color.DarkGray
-                )
+            Surface(shape = RoundedCornerShape(20.dp), color = Color.White, tonalElevation = 2.dp, modifier = Modifier.padding(vertical = 4.dp)) {
+                Text(category, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), fontSize = 14.sp, color = Color.DarkGray)
             }
         }
     }
@@ -188,10 +149,7 @@ fun CategoryList() {
 @Composable
 fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color, onClick: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onClick() },
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -199,7 +157,6 @@ fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color, onClick: (
         Column {
             Box(modifier = Modifier.fillMaxWidth().height(160.dp).background(Color.LightGray)) {
                 Icon(Icons.Default.Restaurant, null, Modifier.align(Alignment.Center).size(50.dp), Color.White)
-                
                 Row(Modifier.padding(12.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     if (truck.isPromo) {
                         Surface(color = Color.Red.copy(alpha = 0.8f), shape = RoundedCornerShape(8.dp)) {
@@ -213,7 +170,6 @@ fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color, onClick: (
                     }
                 }
             }
-
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Column {
@@ -222,30 +178,19 @@ fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color, onClick: (
                     }
                     Icon(Icons.Default.Favorite, null, tint = Color.Red)
                 }
-
                 if (truck.promoText.isNotBlank()) {
-                    Spacer(Modifier.height(12.dp))
-                    Surface(
-                        color = promoColor.copy(alpha = 0.5f),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
+                    Spacer(Modifier.height(12.dp)); Surface(color = promoColor.copy(alpha = 0.5f), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
                         Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.EmojiEvents, null, tint = orange, modifier = Modifier.size(16.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text(truck.promoText, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                            Spacer(Modifier.width(8.dp)); Text(truck.promoText, fontSize = 12.sp, fontWeight = FontWeight.Medium)
                         }
                     }
                 }
-
-                Spacer(Modifier.height(12.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Spacer(Modifier.height(12.dp)); Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(16.dp))
                     Text(" ${truck.rating}", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     Text(" (${truck.reviewsCount} reseñas)", color = Color.Gray, fontSize = 12.sp)
-                    Spacer(Modifier.width(16.dp))
-                    Icon(Icons.Default.LocationOn, null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(16.dp)); Icon(Icons.Default.LocationOn, null, tint = Color.Gray, modifier = Modifier.size(16.dp))
                     Text(" ${truck.distance}", color = Color.Gray, fontSize = 12.sp)
                 }
             }
@@ -255,30 +200,16 @@ fun FoodTruckCard(truck: FoodTruck, orange: Color, promoColor: Color, onClick: (
 
 @Composable
 fun SmallFoodTruckCard(truck: FoodTruck, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier.width(160.dp).clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
+    Card(modifier = Modifier.width(160.dp).clickable { onClick() }, shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Color.White), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
         Column {
-            Box(modifier = Modifier.fillMaxWidth().height(100.dp).background(Color.LightGray)) {
-                Icon(Icons.Default.Fastfood, null, Modifier.align(Alignment.Center), Color.White)
-                Icon(
-                    Icons.Default.FavoriteBorder, 
-                    null, 
-                    Modifier.align(Alignment.TopEnd).padding(8.dp).size(18.dp).background(Color.White.copy(0.5f), CircleShape).padding(2.dp),
-                    Color.White
-                )
-            }
+            Box(modifier = Modifier.fillMaxWidth().height(100.dp).background(Color.LightGray)) { Icon(Icons.Default.Fastfood, null, Modifier.align(Alignment.Center), Color.White) }
             Column(Modifier.padding(8.dp)) {
                 Text(truck.name, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1)
                 Text(truck.category, fontSize = 10.sp, color = Color.Gray)
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
                     Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(12.dp))
                     Text(" ${truck.rating}", fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.weight(1f))
-                    Text(truck.distance, fontSize = 10.sp, color = Color.Gray)
+                    Spacer(Modifier.weight(1f)); Text(truck.distance, fontSize = 10.sp, color = Color.Gray)
                 }
             }
         }
@@ -286,23 +217,26 @@ fun SmallFoodTruckCard(truck: FoodTruck, onClick: () -> Unit) {
 }
 
 @Composable
-fun UrbanBitesBottomNav(orange: Color) {
-    NavigationBar(
-        containerColor = Color.White,
-        contentColor = orange
-    ) {
+fun UrbanBitesBottomNav(
+    orange: Color, 
+    currentRoute: String,
+    onHomeClick: () -> Unit = {},
+    onMapClick: () -> Unit = {},
+    onFavoritesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
+) {
+    NavigationBar(containerColor = Color.White, contentColor = orange) {
         val items = listOf(
-            Triple("Inicio", Icons.Default.Home, true),
-            Triple("Mapa", Icons.Default.Map, false),
-            Triple("Favoritos", Icons.Default.FavoriteBorder, false),
-            Triple("Perfil", Icons.Default.Person, false)
+            Triple("Inicio", Icons.Default.Home, onHomeClick),
+            Triple("Mapa", Icons.Default.Map, onMapClick),
+            Triple("Favoritos", Icons.Default.FavoriteBorder, onFavoritesClick),
+            Triple("Perfil", Icons.Default.Person, onProfileClick)
         )
-
-        items.forEach { (label, icon, selected) ->
+        items.forEach { (label, icon, onClick) ->
             NavigationBarItem(
-                selected = selected,
-                onClick = {},
-                icon = { Icon(icon, contentDescription = null) },
+                selected = label == currentRoute, 
+                onClick = onClick, 
+                icon = { Icon(icon, null) },
                 label = { Text(label) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = orange,

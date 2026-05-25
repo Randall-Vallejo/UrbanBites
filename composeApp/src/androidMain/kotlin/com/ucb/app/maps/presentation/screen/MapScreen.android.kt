@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,48 +22,50 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
+import com.ucb.app.home.domain.model.FoodTruck
 
 @SuppressLint("MissingPermission")
 @Composable
 actual fun MapScreen(
     modifier: Modifier,
-    latitude: Double?,
-    longitude: Double?,
-    title: String?
+    trucks: List<FoodTruck>,
+    onTruckClick: (String) -> Unit,
+    centerLatitude: Double?,
+    centerLongitude: Double?
 ) {
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
     
-    // Si recibimos coordenadas, centramos ahí, si no, en Cbba por defecto
-    val initialPos = if (latitude != null && longitude != null) {
-        LatLng(latitude, longitude)
+    // Posición inicial: Si me dan una específica (detalle), la uso. Si no (mapa general), centro en Cbba.
+    val initialPos = if (centerLatitude != null && centerLongitude != null) {
+        LatLng(centerLatitude, centerLongitude)
     } else {
-        LatLng(-17.37, -66.15)
+        LatLng(-17.3833, -66.15) // Cochabamba Centro
     }
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(initialPos, 15f)
+        position = CameraPosition.fromLatLngZoom(initialPos, 14f)
     }
 
-    // Efecto para mover la cámara si las coordenadas cambian
-    LaunchedEffect(latitude, longitude) {
-        if (latitude != null && longitude != null) {
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 16f)
+    // Si el centro cambia (porque el usuario eligió otro truck), movemos la cámara
+    LaunchedEffect(centerLatitude, centerLongitude) {
+        if (centerLatitude != null && centerLongitude != null) {
+            cameraPositionState.animate(
+                com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(
+                    LatLng(centerLatitude, centerLongitude), 16f
+                )
+            )
         }
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        ) {
+        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                location?.let {
-                    userLocation = LatLng(it.latitude, it.longitude)
-                }
+                location?.let { userLocation = LatLng(it.latitude, it.longitude) }
             }
         }
     }
@@ -73,25 +76,30 @@ actual fun MapScreen(
             cameraPositionState = cameraPositionState,
             uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = false)
         ) {
-            // Marcador del Food Truck (si hay coordenadas)
-            if (latitude != null && longitude != null) {
+            // PINES DE TODOS LOS FOOD TRUCKS
+            trucks.forEach { truck ->
                 Marker(
-                    state = MarkerState(position = LatLng(latitude, longitude)),
-                    title = title ?: "Food Truck",
-                    snippet = "¡Estamos aquí!"
+                    state = MarkerState(position = LatLng(truck.latitude, truck.longitude)),
+                    title = truck.name,
+                    snippet = "${truck.category} • ${truck.rating} ⭐",
+                    onClick = {
+                        onTruckClick(truck.name)
+                        true
+                    }
                 )
             }
 
-            // Marcador del usuario
+            // PIN DEL USUARIO
             userLocation?.let {
                 Marker(
                     state = MarkerState(position = it),
                     title = "Tú estás aquí",
-                    icon = null // Se podría usar un icono azul
+                    alpha = 0.7f
                 )
             }
         }
 
+        // Botón Mi Ubicación (Diseño UrbanBites)
         SmallFloatingActionButton(
             onClick = {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -106,11 +114,11 @@ actual fun MapScreen(
                     permissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
                 }
             },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 100.dp, end = 16.dp), // Subimos el botón para que no lo tape la tarjeta inferior
             containerColor = Color.White,
             contentColor = Color(0xFFFF5722)
         ) {
-            Icon(Icons.Default.LocationOn, contentDescription = "Mi Ubicación")
+            Icon(Icons.Default.MyLocation, contentDescription = "Mi Ubicación")
         }
     }
 }

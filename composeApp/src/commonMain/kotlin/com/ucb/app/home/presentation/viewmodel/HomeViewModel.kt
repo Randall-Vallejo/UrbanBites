@@ -20,6 +20,10 @@ class HomeViewModel(
     private val _state = MutableStateFlow(HomeUiState())
     val state = _state.asStateFlow()
 
+    private var allTrucks: List<FoodTruck> = emptyList()
+    private var selectedCategory: String? = null
+    private var searchQuery: String = ""
+
     private val json = Json { 
         ignoreUnknownKeys = true 
         coerceInputValues = true
@@ -33,15 +37,13 @@ class HomeViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             
+            // Escuchamos la versión 3 de la BD que tiene todos los campos
             firebaseManager.observeData("food_trucks_v3").collect { jsonData ->
                 if (jsonData != null && jsonData != "null") {
                     try {
                         val trucks = json.decodeFromString<List<FoodTruck>>(jsonData)
-                        _state.update { it.copy(
-                            foodTrucks = trucks,
-                            suggestions = trucks.filter { it.isPromo },
-                            isLoading = false
-                        ) }
+                        allTrucks = trucks
+                        applyFilters()
                     } catch (e: Exception) {
                         seedDatabase()
                     }
@@ -50,6 +52,41 @@ class HomeViewModel(
                 }
             }
         }
+    }
+
+    fun filterByCategory(category: String?) {
+        selectedCategory = if (category == "Todos") null else category
+        applyFilters()
+    }
+
+    fun searchTrucks(query: String) {
+        searchQuery = query
+        applyFilters()
+    }
+
+    private fun applyFilters() {
+        var filtered = allTrucks
+        
+        // 1. Filtrar por Categoría
+        if (!selectedCategory.isNullOrBlank()) {
+            filtered = filtered.filter { 
+                it.category.equals(selectedCategory, ignoreCase = true) 
+            }
+        }
+        
+        // 2. Filtrar por Nombre (Buscador)
+        if (searchQuery.isNotBlank()) {
+            filtered = filtered.filter { 
+                it.name.contains(searchQuery, ignoreCase = true) 
+            }
+        }
+
+        // Actualizamos el estado para que la UI (Mapa y Lista) se refresquen
+        _state.update { it.copy(
+            foodTrucks = filtered,
+            suggestions = allTrucks.filter { it.isPromo },
+            isLoading = false
+        ) }
     }
 
     private fun seedDatabase() {

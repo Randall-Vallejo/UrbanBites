@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.ucb.app.demo.presentation.screen.DemoFuncionalidadesScreen
 import com.ucb.app.home.presentation.screen.HomeScreen
 import com.ucb.app.home.presentation.screen.FoodTruckDetailScreen
+import com.ucb.app.maps.presentation.screen.MapExploreScreen
 import com.ucb.app.login.presentation.screen.LoginScreen
 import kotlinx.coroutines.yield
 
@@ -42,6 +43,17 @@ fun AppNavHost(
         }
         composable<NavRoute.Home> {
             HomeScreen(
+                onTruckClick = { name ->
+                    navController.navigate(NavRoute.Detail(name))
+                },
+                onNavigateToMap = {
+                    navController.navigate(NavRoute.Map)
+                }
+            )
+        }
+        composable<NavRoute.Map> {
+            MapExploreScreen(
+                onBack = { navController.popBackStack() },
                 onTruckClick = { name ->
                     navController.navigate(NavRoute.Detail(name))
                 }
