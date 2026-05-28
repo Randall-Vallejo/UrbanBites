@@ -41,4 +41,12 @@
     <string name="run_worker_btn">Ejecutar Worker Ahora</string>
     <string name="localize_title">6. Localize (Traducciones)</string>
     <string name="text_from_resources">Texto de recursos (Res.string.login_btn):</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_demo_title">8. Onboarding Dinámico (Remote Config)</string>
+    <string name="launch_onboarding_btn">Ver Onboarding</string>
+    <string name="reset_onboarding_btn">Resetear Estado</string>
+    <string name="onboarding_skip">Omitir</string>
+    <string name="onboarding_next">Siguiente</string>
+    <string name="onboarding_start">Iniciar</string>
 </resources>

@@ -41,4 +41,12 @@
     <string name="run_worker_btn">Run Worker Now</string>
     <string name="localize_title">6. Localize (Translations)</string>
     <string name="text_from_resources">Text from resources (Res.string.login_btn):</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_demo_title">8. Dynamic Onboarding (Remote Config)</string>
+    <string name="launch_onboarding_btn">View Onboarding</string>
+    <string name="reset_onboarding_btn">Reset State</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_start">Start</string>
 </resources>

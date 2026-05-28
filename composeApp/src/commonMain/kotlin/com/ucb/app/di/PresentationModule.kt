@@ -7,6 +7,7 @@ import com.ucb.app.firebase.presentation.viewmodel.NotificationViewModel
 import com.ucb.app.github.presentation.viewmodel.GitHubViewModel
 import com.ucb.app.login.presentation.viewmodel.LoginViewModel
 import com.ucb.app.movie.presentation.viewmodel.MovieViewModel
+import com.ucb.app.onboarding.presentation.viewmodel.OnboardingViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -18,5 +19,6 @@ val presentationModule = module {
     viewModelOf(::NotificationViewModel)
     viewModelOf(::LoginViewModel)
     viewModelOf(::DemoViewModel)
+    viewModelOf(::OnboardingViewModel)
     viewModel { CartViewModel(get()) }
 }

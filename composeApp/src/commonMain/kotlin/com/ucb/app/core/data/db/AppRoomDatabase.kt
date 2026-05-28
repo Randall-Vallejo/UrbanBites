@@ -16,6 +16,8 @@ import com.ucb.app.core.data.db.entity.ProductEntity
 import com.ucb.app.core.data.db.entity.DemoEntity
 import com.ucb.app.dollar.data.dao.DollarDao
 import com.ucb.app.dollar.data.entity.DollarEntity
+import com.ucb.app.onboarding.data.db.OnboardingEntity
+import com.ucb.app.onboarding.data.db.dao.OnboardingDao
 
 @Database(
     entities = [
@@ -24,9 +26,10 @@ import com.ucb.app.dollar.data.entity.DollarEntity
         CartItemEntity::class,
         OrderEntity::class,
         NotificationEntity::class,
-        DemoEntity::class
+        DemoEntity::class,
+        OnboardingEntity::class
     ],
-    version = 3
+    version = 4
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -42,6 +45,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
 
     abstract fun demoDao(): DemoDao
+
+    abstract fun onboardingDao(): OnboardingDao
 }
 
 // The Room compiler generates the `actual` implementations.

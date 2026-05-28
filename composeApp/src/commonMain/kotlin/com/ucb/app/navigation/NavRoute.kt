@@ -44,4 +44,7 @@ sealed class NavRoute {
 
     @Serializable
     object Demo: NavRoute()
+
+    @Serializable
+    object Onboarding: NavRoute()
 }

@@ -7,6 +7,7 @@ import com.ucb.app.core.data.db.entity.DemoEntity
 import com.ucb.app.demo.presentation.state.DemoUiState
 import com.ucb.app.firebase.data.datasource.FirebaseManager
 import com.ucb.app.firebase.data.datasource.RemoteConfigManager
+import com.ucb.app.onboarding.data.db.OnboardingEntity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -108,6 +109,12 @@ class DemoViewModel(
             } catch (e: Exception) {
                 _state.update { it.copy(workerResult = "Error: ${e.message}") }
             }
+        }
+    }
+
+    fun resetOnboarding() {
+        viewModelScope.launch {
+            database.onboardingDao().setOnboardingCompleted(OnboardingEntity(isCompleted = false))
         }
     }
 }

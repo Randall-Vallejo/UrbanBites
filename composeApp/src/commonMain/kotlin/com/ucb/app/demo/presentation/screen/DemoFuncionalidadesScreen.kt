@@ -21,6 +21,7 @@ fun DemoFuncionalidadesScreen(
     viewModel: DemoViewModel = koinViewModel(),
     onShowLocalNotification: () -> Unit = {},
     onRunWorker: () -> Unit = {},
+    onNavigateToOnboarding: () -> Unit = {},
     fcmToken: String = ""
 ) {
     val uiState by viewModel.state.collectAsState()
@@ -141,6 +142,28 @@ fun DemoFuncionalidadesScreen(
                 DemoSection(title = stringResource(Res.string.localize_title)) {
                     Text(stringResource(Res.string.text_from_resources), fontWeight = FontWeight.Bold)
                     Text(stringResource(Res.string.login_btn), fontSize = 20.sp, color = Color(0xFFFF6D00))
+                }
+            }
+
+            // 8. ONBOARDING DINÁMICO
+            item {
+                DemoSection(title = stringResource(Res.string.onboarding_demo_title)) {
+                    Text("Configurado vía Remote Config con soporte multi-idioma (es, en, fr).")
+                    Row(modifier = Modifier.padding(top = 8.dp)) {
+                        Button(
+                            onClick = onNavigateToOnboarding,
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF673AB7))
+                        ) {
+                            Text(stringResource(Res.string.launch_onboarding_btn))
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        Button(
+                            onClick = { viewModel.resetOnboarding() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                        ) {
+                            Text(stringResource(Res.string.reset_onboarding_btn))
+                        }
+                    }
                 }
             }
         }
