@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">UrbanBites</string>
+
+    <!-- Login -->
+    <string name="login_title">UrbanBites</string>
+    <string name="login_subtitle">Découvrez la meilleure cuisine de rue</string>
+    <string name="login_welcome_title">Bienvenue !</string>
+    <string name="login_welcome_subtitle">Connectez-vous pour explorer les food trucks</string>
+    <string name="login_email_label">Adresse e-mail</string>
+    <string name="login_email_placeholder">vous@email.com</string>
+    <string name="login_password_label">Mot de passe</string>
+    <string name="login_button">SE CONNECTER</string>
+    <string name="register_button">S\'inscrire</string>
+    <string name="continue_as_guest">Continuer en tant qu\'invité</string>
+    <string name="login_empty_email_error">Entrez votre adresse e-mail</string>
+    <string name="login_empty_password_error">Entrez votre mot de passe</string>
+    <string name="login_invalid_credentials_error">E-mail ou mot de passe incorrect</string>
+    <string name="login_footer">© 2024 UrbanBites · Cochabamba, Bolivie</string>
+
+    <!-- Home -->
+    <string name="home_greeting">Bonjour, %s 👋</string>
+    <string name="home_question">Qu\'est-ce qui vous fait envie aujourd\'hui ?</string>
+    <string name="home_search_placeholder">Rechercher des food trucks, des repas...</string>
+    <string name="home_categories_title">Catégories</string>
+    <string name="home_suggestions_title">Suggestions pour vous</string>
+    <string name="home_near_you_title">Près de chez vous</string>
+
+    <!-- Status -->
+    <string name="status_open">Ouvert maintenant</string>
+    <string name="status_closed">Fermé</string>
+    <string name="promo_badge">🔥 PROMO</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">Mes Favoris</string>
+    <string name="favorites_count">%d food trucks enregistrés</string>
+    <string name="favorites_empty">Vous n\'avez pas encore de favoris</string>
+
+    <!-- Map -->
+    <string name="map_search_placeholder">Rechercher sur la carte...</string>
+    <string name="map_filter_title">Filtrer par catégorie</string>
+    <string name="map_results_title">Résultats de recherche</string>
+    <string name="map_no_results">Aucun résultat trouvé</string>
+
+    <!-- Detail -->
+    <string name="detail_menu_title">Menu vedette</string>
+    <string name="detail_reviews_title">Avis des clients</string>
+    <string name="detail_location_title">Emplacement</string>
+    <string name="detail_get_directions">Comment s\'y rendre</string>
+    <string name="detail_share">Partager</string>
+    <string name="detail_gallery">Galerie</string>
+
+    <!-- Demo Examen Strings -->
+    <string name="demo_title">Démo Examen - UrbanBites</string>
+    <string name="room_title">1. Room (Persistance Locale)</string>
+    <string name="room_input_label">Données pour Room</string>
+    <string name="save_btn">Enregistrer</string>
+    <string name="clear_btn">Effacer</string>
+    <string name="room_items_label">Articles dans Room :</string>
+    <string name="firebase_realtime_title">2. Firebase Realtime Database</string>
+    <string name="firebase_input_label">Message à Firebase</string>
+    <string name="send_realtime_btn">Envoyer à Realtime</string>
+    <string name="firebase_last_value_label">Dernière valeur (Realtime) :</string>
+    <string name="remote_config_title">3. Firebase Remote Config</string>
+    <string name="cloud_value_label">Valeur du cloud :</string>
+    <string name="update_config_btn">Mettre à jour la config</string>
+    <string name="local_notif_title">4. Notification Locale (Interne)</string>
+    <string name="local_notif_desc">Test de notification générée par l\'application sans serveur externe.</string>
+    <string name="launch_local_notif_btn">Lancer la notification locale</string>
+    <string name="external_notif_title">7. Notification Externa (FCM Push)</string>
+    <string name="fcm_token_device_label">Jeton FCM de l\'appareil (Cliquez pour copier) :</string>
+    <string name="fcm_instructions">Utilisez ce jeton dans la console Firebase pour tester les envois externes.</string>
+    <string name="background_services_title">5. Services d\'arrière-plan (Worker)</string>
+    <string name="current_status_label">État actuel :</string>
+    <string name="run_worker_btn">Exécuter le Worker maintenant</string>
+    <string name="localize_title">6. Localisation (Traductions)</string>
+    <string name="text_from_resources">Texte des ressources (Res.string.login_button) :</string>
+    <string name="welcome_message">Bienvenue sur UrbanBites</string>
+</resources>

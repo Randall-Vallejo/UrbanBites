@@ -48,11 +48,14 @@ fun MapExploreScreen(
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             
-            // 1. EL MAPA REAL
+            // 1. EL MAPA REAL - Ahora envía la ubicación al ViewModel
             MapScreen(
                 modifier = Modifier.fillMaxSize(),
                 trucks = uiState.foodTrucks,
-                onTruckClick = onTruckClick
+                onTruckClick = onTruckClick,
+                onLocationResult = { lat, lon ->
+                    viewModel.updateUserLocation(lat, lon)
+                }
             )
 
             // 2. BUSCADOR SUPERIOR

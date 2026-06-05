@@ -7,5 +7,7 @@ data class HomeUiState(
     val foodTrucks: List<FoodTruck> = emptyList(),
     val suggestions: List<FoodTruck> = emptyList(),
     val userName: String = "María García",
-    val error: String? = null
+    val error: String? = null,
+    val userLatitude: Double? = null,
+    val userLongitude: Double? = null
 )

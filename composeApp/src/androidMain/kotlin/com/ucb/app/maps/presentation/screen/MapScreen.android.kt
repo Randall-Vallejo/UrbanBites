@@ -8,7 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.LocationSearching
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,39 +30,50 @@ actual fun MapScreen(
     trucks: List<FoodTruck>,
     onTruckClick: (String) -> Unit,
     centerLatitude: Double?,
-    centerLongitude: Double?
+    centerLongitude: Double?,
+    onLocationResult: (Double, Double) -> Unit
 ) {
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     
-    var userLocation by remember { mutableStateOf<LatLng?>(null) }
-    
-    val initialPos = if (centerLatitude != null && centerLongitude != null) {
-        LatLng(centerLatitude, centerLongitude)
-    } else {
-        LatLng(-17.3833, -66.15) 
+    var hasLocationPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        )
     }
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(initialPos, 14f)
-    }
-
-    LaunchedEffect(centerLatitude, centerLongitude) {
-        if (centerLatitude != null && centerLongitude != null) {
-            cameraPositionState.animate(
-                com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(
-                    LatLng(centerLatitude, centerLongitude), 16f
-                )
-            )
-        }
+        position = CameraPosition.fromLatLngZoom(
+            LatLng(centerLatitude ?: -17.3833, centerLongitude ?: -66.15), 
+            14f
+        )
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        hasLocationPermission = granted
+        if (granted) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                location?.let { userLocation = LatLng(it.latitude, it.longitude) }
+                location?.let { 
+                    onLocationResult(it.latitude, it.longitude)
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (!hasLocationPermission) {
+            permissionLauncher.launch(arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ))
+        } else {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                location?.let { 
+                    onLocationResult(it.latitude, it.longitude)
+                }
             }
         }
     }
@@ -72,7 +82,14 @@ actual fun MapScreen(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = false)
+            properties = MapProperties(
+                isMyLocationEnabled = hasLocationPermission,
+                mapType = MapType.NORMAL
+            ),
+            uiSettings = MapUiSettings(
+                zoomControlsEnabled = false, 
+                myLocationButtonEnabled = false
+            )
         ) {
             trucks.forEach { truck ->
                 Marker(
@@ -85,28 +102,22 @@ actual fun MapScreen(
                     }
                 )
             }
-
-            userLocation?.let {
-                Marker(
-                    state = MarkerState(position = it),
-                    title = "Tú estás aquí",
-                    alpha = 0.7f
-                )
-            }
         }
 
         SmallFloatingActionButton(
             onClick = {
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (hasLocationPermission) {
                     fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                         location?.let {
                             val pos = LatLng(it.latitude, it.longitude)
-                            userLocation = pos
-                            cameraPositionState.position = CameraPosition.fromLatLngZoom(pos, 15f)
+                            onLocationResult(it.latitude, it.longitude)
+                            cameraPositionState.move(
+                                com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(pos, 16f)
+                            )
                         }
                     }
                 } else {
-                    permissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+                    permissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
                 }
             },
             modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 100.dp, end = 16.dp),

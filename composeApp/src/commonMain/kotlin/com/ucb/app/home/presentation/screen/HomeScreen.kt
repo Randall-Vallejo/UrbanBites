@@ -24,6 +24,10 @@ import com.ucb.app.home.presentation.viewmodel.HomeViewModel
 import com.ucb.app.home.domain.model.FoodTruck
 import org.koin.compose.viewmodel.koinViewModel
 
+// Nota: Importaciones específicas de plataforma se manejan vía Expect/Actual o 
+// en este caso, asumimos que estamos inyectando la lógica de ubicación.
+// Para esta solución rápida, usaremos un efecto que el desarrollador puede conectar.
+
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
@@ -38,6 +42,10 @@ fun HomeScreen(
     val redColor = Color(0xFFE64A19)
     val lightYellow = Color(0xFFFFF9C4)
 
+    // Simulamos la obtención de ubicación real si el desarrollador tiene un LocationProvider
+    // En una implementación real de Android, aquí llamaríamos a FusedLocationClient
+    // Por ahora, activamos una bandera para que el usuario sepa que falta el GPS
+    
     Scaffold(
         bottomBar = { 
             UrbanBitesBottomNav(
@@ -46,6 +54,19 @@ fun HomeScreen(
                 onMapClick = onNavigateToMap,
                 onFavoritesClick = onNavigateToFavorites
             ) 
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    viewModel.getRandomTruck()?.let { truck ->
+                        onTruckClick(truck.name)
+                    }
+                },
+                containerColor = orangeColor,
+                contentColor = Color.White,
+                icon = { Icon(Icons.Default.AutoAwesome, "Sorpréndeme") },
+                text = { Text("Sorpréndeme") }
+            )
         }
     ) { padding ->
         if (uiState.isLoading) {
@@ -60,7 +81,14 @@ fun HomeScreen(
                     .background(Color(0xFFF8F8F8))
             ) {
                 item { HeaderSection(uiState.userName, orangeColor, redColor) }
-                item { SectionTitle("Categorías"); CategoryList() }
+                
+                item { 
+                    SectionTitle("Categorías")
+                    CategoryList { category ->
+                        viewModel.filterByCategory(category)
+                    } 
+                }
+
                 item {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -87,10 +115,30 @@ fun HomeScreen(
 
                 item {
                     SectionTitle("Cerca de ti")
+                    if (uiState.userLatitude == null) {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .clickable { 
+                                    // Simulación de activación de GPS para la demo
+                                    // En producción esto viene del LocationService
+                                    viewModel.updateUserLocation(-17.393, -66.157) 
+                                },
+                            color = orangeColor.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.GpsFixed, null, tint = orangeColor, modifier = Modifier.size(16.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text("Toca aquí para simular GPS y ver distancias reales", fontSize = 12.sp, color = orangeColor)
+                            }
+                        }
+                    }
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.padding(bottom = 24.dp)
+                        modifier = Modifier.padding(bottom = 24.dp, top = 8.dp)
                     ) {
                         items(uiState.foodTrucks) { truck ->
                             SmallFoodTruckCard(truck, onClick = { onTruckClick(truck.name) })
@@ -146,11 +194,18 @@ fun SectionTitle(title: String, paddingValues: PaddingValues = PaddingValues(16.
 }
 
 @Composable
-fun CategoryList() {
-    val categories = listOf("Hamburguesas", "Pizza", "Pollo", "Tacos", "Postres")
+fun CategoryList(onCategoryClick: (String) -> Unit) {
+    val categories = listOf("Todos", "Hamburguesas", "Pizza", "Pollo", "Tacos", "Postres")
     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(categories) { category ->
-            Surface(shape = RoundedCornerShape(20.dp), color = Color.White, tonalElevation = 2.dp, modifier = Modifier.padding(vertical = 4.dp)) {
+            Surface(
+                shape = RoundedCornerShape(20.dp), 
+                color = Color.White, 
+                tonalElevation = 2.dp,
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .clickable { onCategoryClick(category) }
+            ) {
                 Text(category, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), fontSize = 14.sp, color = Color.DarkGray)
             }
         }
