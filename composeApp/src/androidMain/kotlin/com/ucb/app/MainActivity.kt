@@ -6,8 +6,10 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,10 +31,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // 1. Crear canal de notificaciones (Esencial para Android 8.0+)
         createNotificationChannel()
-        
-        // 2. Solicitar permisos (Esencial para Android 13+)
         checkNotificationPermission()
 
         val scheduler = MyScheduler(this)
@@ -53,56 +52,38 @@ class MainActivity : ComponentActivity() {
             App(
                 destination = destination,
                 onShowLocalNotification = {
-                    notificationHelper.showNotification(
-                        "Notificación Interna", 
-                        "¡Has guardado un favorito!"
-                    )
+                    notificationHelper.showNotification("UrbanBites", "¡Prueba local!")
                 },
-                onRunWorker = {
-                    scheduler.runNow()
-                },
-                fcmToken = fcmToken
+                onRunWorker = { scheduler.runNow() },
+                fcmToken = fcmToken,
+                onOpenSystemSettings = {
+                    // Requerimiento 4: Acceso directo a Ajustes del Sistema
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", packageName, null)
+                    }
+                    startActivity(intent)
+                }
             )
         }
     }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelId = "urban_bites_channel_v5"
-            val name = "Urban Bites VIP"
-            val descriptionText = "Canal prioritario para notificaciones push"
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(channelId, name, importance).apply {
-                description = descriptionText
-            }
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channel = NotificationChannel(
+                "urban_bites_channel_v5", 
+                "Urban Bites VIP", 
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != 
-                PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    101
-                )
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 101)
             }
         }
     }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        destination = intent.getStringExtra("destination")
-    }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App()
 }

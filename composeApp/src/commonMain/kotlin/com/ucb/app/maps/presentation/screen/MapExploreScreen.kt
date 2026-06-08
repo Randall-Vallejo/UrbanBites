@@ -29,10 +29,12 @@ fun MapExploreScreen(
     onBack: () -> Unit,
     onTruckClick: (String) -> Unit,
     onNavigateToFavorites: () -> Unit,
+    onNavigateToProfile: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.state.collectAsState()
     val orangeColor = Color(0xFFFF5722)
+    val darkTextColor = Color(0xFF333333) // Color para textos sobre fondo blanco
     var showFilters by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
 
@@ -42,13 +44,13 @@ fun MapExploreScreen(
                 orange = orangeColor,
                 currentRoute = "Mapa",
                 onHomeClick = onBack,
-                onFavoritesClick = onNavigateToFavorites
+                onFavoritesClick = onNavigateToFavorites,
+                onProfileClick = onNavigateToProfile
             )
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             
-            // 1. EL MAPA REAL - Ahora envía la ubicación al ViewModel
             MapScreen(
                 modifier = Modifier.fillMaxSize(),
                 trucks = uiState.foodTrucks,
@@ -58,7 +60,7 @@ fun MapExploreScreen(
                 }
             )
 
-            // 2. BUSCADOR SUPERIOR
+            // BUSCADOR SUPERIOR
             Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Surface(
@@ -77,8 +79,9 @@ fun MapExploreScreen(
                                     viewModel.searchTrucks(it)
                                 },
                                 modifier = Modifier.weight(1f),
+                                textStyle = androidx.compose.ui.text.TextStyle(color = darkTextColor),
                                 decorationBox = { innerTextField ->
-                                    if (searchQuery.isEmpty()) Text("Buscar en el mapa...", color = Color.LightGray, fontSize = 14.sp)
+                                    if (searchQuery.isEmpty()) Text("Buscar...", color = Color.LightGray, fontSize = 14.sp)
                                     innerTextField()
                                 }
                             )
@@ -94,17 +97,20 @@ fun MapExploreScreen(
                 }
             }
 
-            // 3. TARJETA INFERIOR
+            // TARJETA INFERIOR ( Food trucks cercanos )
             Surface(
                 modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp).fillMaxWidth().heightIn(max = 280.dp),
                 shape = RoundedCornerShape(24.dp),
-                color = Color.White,
+                color = Color.White, // Fondo permanece blanco
                 shadowElevation = 10.dp
             ) {
                 Column(Modifier.padding(16.dp)) {
                     Box(Modifier.width(40.dp).height(4.dp).background(Color.LightGray, CircleShape).align(Alignment.CenterHorizontally))
                     Spacer(Modifier.height(16.dp))
-                    Text("Food trucks cercanos", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    
+                    // REQUERIMIENTO: Título en color oscuro permanente
+                    Text("Food trucks cercanos", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = darkTextColor)
+                    
                     Spacer(Modifier.height(12.dp))
                     
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -118,7 +124,8 @@ fun MapExploreScreen(
                                 }
                                 Spacer(Modifier.width(16.dp))
                                 Column(Modifier.weight(1f)) {
-                                    Text(truck.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                    // REQUERIMIENTO: Nombre y distancia en color oscuro permanente
+                                    Text(truck.name, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = darkTextColor)
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(14.dp))
                                         Text(" ${truck.rating} • ${truck.distance}", fontSize = 12.sp, color = Color.Gray)
@@ -131,19 +138,19 @@ fun MapExploreScreen(
                 }
             }
 
-            // 4. DIÁLOGO DE FILTROS
             if (showFilters) {
                 AlertDialog(
                     onDismissRequest = { showFilters = false },
                     confirmButton = { TextButton(onClick = { showFilters = false }) { Text("Cerrar") } },
-                    title = { Text("Filtrar por categoría", fontWeight = FontWeight.Bold) },
+                    title = { Text("Categorías", fontWeight = FontWeight.Bold, color = darkTextColor) },
+                    containerColor = Color.White,
                     text = {
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            val categories = listOf("Todos", "Hamburguesas", "Pizza", "Pollo", "Tacos", "Bebidas")
+                            val categories = listOf("Todos", "Hamburguesas", "Pizza", "Pollo", "Tacos")
                             categories.forEach { cat ->
                                 SuggestionChip(
                                     onClick = { 

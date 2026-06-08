@@ -115,6 +115,11 @@ android {
     namespace = "com.ucb.app"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    sourceSets["main"].apply {
+        manifest.srcFile("src/androidMain/AndroidManifest.xml")
+        res.setSrcDirs(listOf("src/androidMain/res"))
+    }
+
     defaultConfig {
         applicationId = "com.ucb.app"
         minSdk = libs.versions.android.minSdk.get().toInt()

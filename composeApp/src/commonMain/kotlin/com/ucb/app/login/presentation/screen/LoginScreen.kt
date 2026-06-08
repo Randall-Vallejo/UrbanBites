@@ -36,11 +36,11 @@ fun LoginScreen(
     val uiState by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
 
-    // Colores UrbanBites extraídos del diseño Figma
     val orangeColor = Color(0xFFFF5722)
     val redColor = Color(0xFFE64A19)
     val lightOrange = Color(0xFFFF8A65)
     val surfaceGray = Color(0xFFF5F5F5)
+    val fixedDarkColor = Color(0xFF333333) // Color negro/gris permanente
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collectLatest { effect ->
@@ -51,11 +51,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(orangeColor, redColor)
-                )
-            )
+            .background(brush = Brush.verticalGradient(colors = listOf(orangeColor, redColor)))
     ) {
         Column(
             modifier = Modifier
@@ -66,7 +62,6 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Logo Card con Icono
             Card(
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -74,33 +69,16 @@ fun LoginScreen(
                 modifier = Modifier.size(80.dp)
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = null,
-                        tint = orangeColor,
-                        modifier = Modifier.size(40.dp)
-                    )
+                    Icon(Icons.Default.Home, null, tint = orangeColor, modifier = Modifier.size(40.dp))
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "UrbanBites",
-                color = Color.White,
-                fontSize = 36.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-            Text(
-                text = "Descubre la mejor comida callejera",
-                color = Color.White.copy(alpha = 0.9f),
-                fontSize = 16.sp,
-                textAlign = TextAlign.Center
-            )
+            Text("UrbanBites", color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.ExtraBold)
+            Text("Descubre la mejor comida callejera", color = Color.White.copy(alpha = 0.9f), fontSize = 16.sp, textAlign = TextAlign.Center)
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Login Form Card
             Card(
                 shape = RoundedCornerShape(32.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -111,179 +89,79 @@ fun LoginScreen(
                     modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "¡Bienvenido de vuelta!",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF333333)
-                    )
-                    Text(
-                        text = "Inicia sesión para explorar food trucks",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center
-                    )
+                    Text("¡Bienvenido!", fontWeight = FontWeight.Bold, fontSize = 24.sp, color = fixedDarkColor)
+                    Text("Inicia sesión para continuar", color = Color.Gray, fontSize = 14.sp)
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Correo
-                    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            "Correo electrónico", 
-                            fontSize = 14.sp, 
-                            fontWeight = FontWeight.Bold, 
-                            color = Color.DarkGray, 
-                            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
-                        )
+                    Column(Modifier.fillMaxWidth()) {
+                        Text("Correo electrónico", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = fixedDarkColor)
                         OutlinedTextField(
                             value = uiState.email,
                             onValueChange = { viewModel.onEvent(LoginEvent.OnEmailChanged(it)) },
                             placeholder = { Text("tu@email.com") },
-                            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = orangeColor) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = surfaceGray,
-                                unfocusedContainerColor = surfaceGray,
-                                focusedIndicatorColor = orangeColor,
-                                unfocusedIndicatorColor = Color.Transparent
-                            ),
                             singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = fixedDarkColor,
+                                unfocusedTextColor = fixedDarkColor,
+                                focusedBorderColor = orangeColor,
+                                unfocusedContainerColor = surfaceGray,
+                                focusedContainerColor = surfaceGray
+                            )
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Contraseña
-                    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            "Contraseña", 
-                            fontSize = 14.sp, 
-                            fontWeight = FontWeight.Bold, 
-                            color = Color.DarkGray, 
-                            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
-                        )
+                    Column(Modifier.fillMaxWidth()) {
+                        Text("Contraseña", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = fixedDarkColor)
                         OutlinedTextField(
                             value = uiState.password,
                             onValueChange = { viewModel.onEvent(LoginEvent.OnPasswordChanged(it)) },
-                            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = orangeColor) },
-                            trailingIcon = {
-                                IconButton(onClick = { viewModel.onEvent(LoginEvent.OnTogglePasswordVisibilityClicked) }) {
-                                    Icon(
-                                        imageVector = if (uiState.isPasswordVisible) Icons.Default.Close else Icons.Default.Check,
-                                        contentDescription = null,
-                                        tint = Color.Gray
-                                    )
-                                }
-                            },
+                            visualTransformation = if (uiState.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = surfaceGray,
-                                unfocusedContainerColor = surfaceGray,
-                                focusedIndicatorColor = orangeColor,
-                                unfocusedIndicatorColor = Color.Transparent
-                            ),
                             singleLine = true,
-                            visualTransformation = if (uiState.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                        )
-                    }
-
-                    if (uiState.error != null) {
-                        val errorText = when (uiState.error) {
-                            "EMPTY_EMAIL" -> "Correo vacío"
-                            "EMPTY_PASSWORD" -> "Contraseña vacía"
-                            "INVALID_CREDENTIALS" -> "Credenciales inválidas"
-                            else -> uiState.error!!
-                        }
-                        Text(
-                            text = errorText,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(top = 8.dp).align(Alignment.Start)
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = fixedDarkColor,
+                                unfocusedTextColor = fixedDarkColor,
+                                focusedBorderColor = orangeColor,
+                                unfocusedContainerColor = surfaceGray,
+                                focusedContainerColor = surfaceGray
+                            )
                         )
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Botón Login
                     Button(
                         onClick = { viewModel.onEvent(LoginEvent.OnLoginClicked) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        contentPadding = PaddingValues(),
+                        colors = ButtonDefaults.buttonColors(containerColor = orangeColor),
                         enabled = !uiState.isLoading
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    brush = Brush.horizontalGradient(listOf(lightOrange, orangeColor)),
-                                    shape = RoundedCornerShape(16.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (uiState.isLoading) {
-                                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                            } else {
-                                Text(
-                                    text = "Iniciar sesión",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp
-                                )
-                            }
-                        }
+                        if (uiState.isLoading) CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                        else Text("Iniciar sesión", color = Color.White, fontWeight = FontWeight.Bold)
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Botón Registro - CORREGIDO: Ahora llama a onNavigateToRegister
-                    Button(
-                        onClick = { onNavigateToRegister() },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFEEEEEE),
-                            contentColor = orangeColor
-                        )
-                    ) {
-                        Text(
-                            text = "Registrarse",
-                            fontWeight = FontWeight.SemiBold
-                        )
+                    TextButton(onClick = onNavigateToRegister) {
+                        Text("¿No tienes cuenta? Regístrate aquí", color = orangeColor)
                     }
                 }
             }
-
+            
             Spacer(modifier = Modifier.height(24.dp))
-
-            // Opción de Invitado
             TextButton(onClick = { viewModel.onEvent(LoginEvent.OnContinueAsGuestClicked) }) {
-                Text(
-                    text = "Continuar como invitado",
-                    color = Color.White,
-                    fontWeight = FontWeight.Medium,
-                    textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
-                )
+                Text("Continuar como invitado", color = Color.White, textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline)
             }
-
+            
             Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                text = "© 2024 UrbanBites · Cochabamba, Bolivia",
-                color = Color.White.copy(alpha = 0.7f),
-                fontSize = 12.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            Text("© 2026 UrbanBites · Cochabamba, Bolivia", color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
         }
     }
 }

@@ -4,6 +4,9 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -18,10 +21,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import com.ucb.app.home.domain.model.FoodTruck
+import kotlinx.coroutines.launch
 
 @SuppressLint("MissingPermission")
 @Composable
@@ -34,12 +42,32 @@ actual fun MapScreen(
     onLocationResult: (Double, Double) -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope() // Agregado para manejar la animación
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     
     var hasLocationPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         )
+    }
+
+    // Estado para el icono del marcador
+    var truckIcon by remember { mutableStateOf<BitmapDescriptor?>(null) }
+
+    LaunchedEffect(Unit) {
+        MapsInitializer.initialize(context)
+        
+        // REQUERIMIENTO: Marcador divertido (Emoji 🚚)
+        val size = 120 
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint().apply {
+            textSize = 80f 
+            textAlign = Paint.Align.CENTER
+        }
+        
+        canvas.drawText("🚚", size / 2f, size * 0.75f, paint)
+        truckIcon = BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     val cameraPositionState = rememberCameraPositionState {
@@ -55,26 +83,19 @@ actual fun MapScreen(
         val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
         hasLocationPermission = granted
         if (granted) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                location?.let { 
-                    onLocationResult(it.latitude, it.longitude)
-                }
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener { location ->
+                location?.let { onLocationResult(it.latitude, it.longitude) }
             }
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (!hasLocationPermission) {
-            permissionLauncher.launch(arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ))
-        } else {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                location?.let { 
-                    onLocationResult(it.latitude, it.longitude)
-                }
+    LaunchedEffect(hasLocationPermission) {
+        if (hasLocationPermission) {
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener { location ->
+                location?.let { onLocationResult(it.latitude, it.longitude) }
             }
+        } else {
+            permissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
         }
     }
 
@@ -82,19 +103,14 @@ actual fun MapScreen(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            properties = MapProperties(
-                isMyLocationEnabled = hasLocationPermission,
-                mapType = MapType.NORMAL
-            ),
-            uiSettings = MapUiSettings(
-                zoomControlsEnabled = false, 
-                myLocationButtonEnabled = false
-            )
+            properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
+            uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = false)
         ) {
             trucks.forEach { truck ->
                 Marker(
                     state = MarkerState(position = LatLng(truck.latitude, truck.longitude)),
                     title = truck.name,
+                    icon = truckIcon,
                     snippet = "${truck.category} • ${truck.rating} ⭐",
                     onClick = {
                         onTruckClick(truck.name)
@@ -107,13 +123,16 @@ actual fun MapScreen(
         SmallFloatingActionButton(
             onClick = {
                 if (hasLocationPermission) {
-                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener { location ->
                         location?.let {
                             val pos = LatLng(it.latitude, it.longitude)
                             onLocationResult(it.latitude, it.longitude)
-                            cameraPositionState.move(
-                                com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(pos, 16f)
-                            )
+                            // CORRECCIÓN: Usar scope.launch para llamar a la función suspend 'animate'
+                            scope.launch {
+                                cameraPositionState.animate(
+                                    com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(pos, 16f)
+                                )
+                            }
                         }
                     }
                 } else {
