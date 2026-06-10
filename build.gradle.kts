@@ -8,4 +8,5 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.google.gms.google.services) apply false
     alias(libs.plugins.secrets) apply false
+    alias(libs.plugins.firebase.appdistribution) apply false
 }

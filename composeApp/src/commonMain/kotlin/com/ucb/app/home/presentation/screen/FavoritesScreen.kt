@@ -20,6 +20,9 @@ import androidx.compose.ui.unit.sp
 import com.ucb.app.home.presentation.viewmodel.HomeViewModel
 import com.ucb.app.home.domain.model.FoodTruck
 import org.koin.compose.viewmodel.koinViewModel
+import com.ucb.app.Res
+import com.ucb.app.*
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FavoritesScreen(
@@ -33,11 +36,11 @@ fun FavoritesScreen(
     val orangeColor = Color(0xFFFF5722)
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background, // Adaptable
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             UrbanBitesBottomNav(
                 orange = orangeColor,
-                currentRoute = "Favoritos",
+                currentRoute = stringResource(Res.string.nav_favorites),
                 onHomeClick = onNavigateBack,
                 onMapClick = onNavigateToMap,
                 onProfileClick = onNavigateToProfile
@@ -51,13 +54,13 @@ fun FavoritesScreen(
         ) {
             Column(Modifier.padding(24.dp)) {
                 Text(
-                    "Mis Favoritos", 
+                    stringResource(Res.string.favorites_title), 
                     fontSize = 28.sp, 
                     fontWeight = FontWeight.Bold, 
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    "${favorites.size} food trucks guardados", 
+                    stringResource(Res.string.favorites_count, favorites.size), 
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f), 
                     fontSize = 14.sp
                 )
@@ -73,7 +76,7 @@ fun FavoritesScreen(
                             MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
                         )
                         Spacer(Modifier.height(16.dp))
-                        Text("Aún no tienes favoritos", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f))
+                        Text(stringResource(Res.string.favorites_empty), color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f))
                     }
                 }
             } else {
@@ -135,7 +138,7 @@ fun FavoriteCard(truck: com.ucb.app.home.data.db.entity.FavoriteTruckEntity, onC
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
-                            "Abierto", 
+                            stringResource(Res.string.status_open),
                             color = Color(0xFF2E7D32), 
                             fontSize = 11.sp, 
                             fontWeight = FontWeight.Bold,

@@ -38,6 +38,7 @@ runner = "1.5.2"
 core = "1.5.0"
 composeIconsVersion = "1.7.1"
 secrets = "2.0.1"
+firebaseAppDistribution = "5.1.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -112,3 +113,4 @@ google-gms-google-services = { id = "com.google.gms.google-services", version.re
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 android-lint = { id = "com.android.lint", version.ref = "agp" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
+firebase-appdistribution = { id = "com.google.firebase.appdistribution", version.ref = "firebaseAppDistribution" }

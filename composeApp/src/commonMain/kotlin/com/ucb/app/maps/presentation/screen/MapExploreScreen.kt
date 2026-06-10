@@ -22,6 +22,9 @@ import com.ucb.app.home.domain.model.FoodTruck
 import com.ucb.app.home.presentation.screen.UrbanBitesBottomNav
 import com.ucb.app.home.presentation.viewmodel.HomeViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import com.ucb.app.Res
+import com.ucb.app.*
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -34,7 +37,7 @@ fun MapExploreScreen(
 ) {
     val uiState by viewModel.state.collectAsState()
     val orangeColor = Color(0xFFFF5722)
-    val darkTextColor = Color(0xFF333333) // Color para textos sobre fondo blanco
+    val darkTextColor = Color(0xFF333333)
     var showFilters by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
 
@@ -42,7 +45,7 @@ fun MapExploreScreen(
         bottomBar = {
             UrbanBitesBottomNav(
                 orange = orangeColor,
-                currentRoute = "Mapa",
+                currentRoute = stringResource(Res.string.nav_map),
                 onHomeClick = onBack,
                 onFavoritesClick = onNavigateToFavorites,
                 onProfileClick = onNavigateToProfile
@@ -81,7 +84,7 @@ fun MapExploreScreen(
                                 modifier = Modifier.weight(1f),
                                 textStyle = androidx.compose.ui.text.TextStyle(color = darkTextColor),
                                 decorationBox = { innerTextField ->
-                                    if (searchQuery.isEmpty()) Text("Buscar...", color = Color.LightGray, fontSize = 14.sp)
+                                    if (searchQuery.isEmpty()) Text(stringResource(Res.string.common_search), color = Color.LightGray, fontSize = 14.sp)
                                     innerTextField()
                                 }
                             )
@@ -101,15 +104,14 @@ fun MapExploreScreen(
             Surface(
                 modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp).fillMaxWidth().heightIn(max = 280.dp),
                 shape = RoundedCornerShape(24.dp),
-                color = Color.White, // Fondo permanece blanco
+                color = Color.White,
                 shadowElevation = 10.dp
             ) {
                 Column(Modifier.padding(16.dp)) {
                     Box(Modifier.width(40.dp).height(4.dp).background(Color.LightGray, CircleShape).align(Alignment.CenterHorizontally))
                     Spacer(Modifier.height(16.dp))
                     
-                    // REQUERIMIENTO: Título en color oscuro permanente
-                    Text("Food trucks cercanos", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = darkTextColor)
+                    Text(stringResource(Res.string.map_nearby_trucks), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = darkTextColor)
                     
                     Spacer(Modifier.height(12.dp))
                     
@@ -124,7 +126,6 @@ fun MapExploreScreen(
                                 }
                                 Spacer(Modifier.width(16.dp))
                                 Column(Modifier.weight(1f)) {
-                                    // REQUERIMIENTO: Nombre y distancia en color oscuro permanente
                                     Text(truck.name, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = darkTextColor)
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(14.dp))
@@ -141,8 +142,8 @@ fun MapExploreScreen(
             if (showFilters) {
                 AlertDialog(
                     onDismissRequest = { showFilters = false },
-                    confirmButton = { TextButton(onClick = { showFilters = false }) { Text("Cerrar") } },
-                    title = { Text("Categorías", fontWeight = FontWeight.Bold, color = darkTextColor) },
+                    confirmButton = { TextButton(onClick = { showFilters = false }) { Text(stringResource(Res.string.common_close)) } },
+                    title = { Text(stringResource(Res.string.map_filter_title), fontWeight = FontWeight.Bold, color = darkTextColor) },
                     containerColor = Color.White,
                     text = {
                         FlowRow(

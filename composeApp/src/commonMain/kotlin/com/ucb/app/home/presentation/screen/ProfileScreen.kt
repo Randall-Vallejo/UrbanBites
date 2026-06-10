@@ -24,6 +24,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucb.app.core.session.UserSession
+import com.ucb.app.Res
+import com.ucb.app.nav_profile
+import com.ucb.app.profile_account
+import com.ucb.app.profile_favorites
+import com.ucb.app.profile_favorites_desc
+import com.ucb.app.profile_language
+import com.ucb.app.profile_language_desc
+import com.ucb.app.profile_logout
+import com.ucb.app.profile_logout_desc
+import com.ucb.app.profile_made_in
+import com.ucb.app.profile_my_business
+import com.ucb.app.profile_notifications
+import com.ucb.app.profile_notifications_desc
+import com.ucb.app.profile_register_truck
+import com.ucb.app.profile_register_truck_desc
+import com.ucb.app.profile_settings
+import com.ucb.app.profile_settings_desc
+import com.ucb.app.profile_terms
+import com.ucb.app.profile_terms_desc
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ProfileScreen(
@@ -49,7 +69,7 @@ fun ProfileScreen(
         bottomBar = {
             UrbanBitesBottomNav(
                 orange = orangeColor,
-                currentRoute = "Perfil",
+                currentRoute = stringResource(Res.string.nav_profile),
                 onHomeClick = onNavigateToHome,
                 onMapClick = onNavigateToMap,
                 onFavoritesClick = onNavigateToFavorites,
@@ -107,21 +127,21 @@ fun ProfileScreen(
             // Menu Options
             Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                 Text(
-                    text = "Mi Negocio",
+                    text = stringResource(Res.string.profile_my_business),
                     style = MaterialTheme.typography.titleSmall,
                     color = orangeColor,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 ProfileMenuItem(
                     icon = Icons.Default.Storefront, 
-                    title = "Registrar mi Food Truck", 
-                    subtitle = "Súmate a la red de UrbanBites", 
+                    title = stringResource(Res.string.profile_register_truck), 
+                    subtitle = stringResource(Res.string.profile_register_truck_desc), 
                     onClick = onNavigateToAddFoodTruck
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Cuenta",
+                    text = stringResource(Res.string.profile_account),
                     style = MaterialTheme.typography.titleSmall,
                     color = orangeColor,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -129,38 +149,38 @@ fun ProfileScreen(
 
                 ProfileMenuItem(
                     icon = Icons.Default.Favorite, 
-                    title = "Mis Favoritos", 
-                    subtitle = "Food trucks guardados", 
+                    title = stringResource(Res.string.profile_favorites), 
+                    subtitle = stringResource(Res.string.profile_favorites_desc), 
                     onClick = onNavigateToFavorites
                 )
                 ProfileMenuItem(
                     icon = Icons.Default.Notifications, 
-                    title = "Notificaciones", 
-                    subtitle = "Gestionar alertas", 
+                    title = stringResource(Res.string.profile_notifications), 
+                    subtitle = stringResource(Res.string.profile_notifications_desc), 
                     onClick = onNavigateToNotifications
                 )
                 ProfileMenuItem(
                     icon = Icons.Default.Language, 
-                    title = "Idioma", 
-                    subtitle = "Español, English, Français", 
+                    title = stringResource(Res.string.profile_language), 
+                    subtitle = stringResource(Res.string.profile_language_desc), 
                     onClick = onNavigateToLanguage
                 )
                 ProfileMenuItem(
                     icon = Icons.Default.Settings, 
-                    title = "Configuración", 
-                    subtitle = "Tema, Unidades y GPS", 
+                    title = stringResource(Res.string.profile_settings), 
+                    subtitle = stringResource(Res.string.profile_settings_desc), 
                     onClick = onNavigateToSettings
                 )
                 ProfileMenuItem(
                     icon = Icons.Default.Description, 
-                    title = "Términos y Condiciones", 
-                    subtitle = "Legal y Privacidad", 
+                    title = stringResource(Res.string.profile_terms), 
+                    subtitle = stringResource(Res.string.profile_terms_desc), 
                     onClick = onNavigateToTerms
                 )
                 ProfileMenuItem(
                     icon = Icons.Default.Logout, 
-                    title = "Cerrar sesión", 
-                    subtitle = "Salir de tu cuenta", 
+                    title = stringResource(Res.string.profile_logout), 
+                    subtitle = stringResource(Res.string.profile_logout_desc), 
                     isLast = true, 
                     onClick = onLogout
                 )
@@ -177,7 +197,7 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
-                text = "© 2026 - Hecho en Cochabamba",
+                text = "© 2026 - " + stringResource(Res.string.profile_made_in),
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                 fontSize = 12.sp,
                 textAlign = TextAlign.Center,
@@ -229,7 +249,6 @@ fun ProfileMenuItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            // Cambiado a KeyboardArrowRight para evitar errores de referencia
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
                 contentDescription = null,

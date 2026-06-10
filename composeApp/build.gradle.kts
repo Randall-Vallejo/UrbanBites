@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.firebase.appdistribution)
 }
 
 kotlin {
@@ -55,7 +56,6 @@ kotlin {
             implementation(libs.facebook.login)
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.1")
             implementation(libs.androidx.work.runtime.ktx)
-            // Firebase Remote Config para Android
             implementation("com.google.firebase:firebase-config-ktx:21.6.3")
             implementation("androidx.core:core-splashscreen:1.0.1")
         }
@@ -140,6 +140,17 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            // Configuración de App Distribution
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = "Prototipo UrbanBites - Versión de examen"
+            }
+        }
+        getByName("debug") {
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = "Versión de depuración para pruebas rápidas"
+            }
         }
     }
     compileOptions {

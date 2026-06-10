@@ -26,6 +26,9 @@ import com.ucb.app.home.domain.model.FoodTruck
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.ucb.app.Res
+import com.ucb.app.*
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HomeScreen(
@@ -48,7 +51,7 @@ fun HomeScreen(
         bottomBar = { 
             UrbanBitesBottomNav(
                 orange = orangeColor, 
-                currentRoute = "Inicio",
+                currentRoute = stringResource(Res.string.nav_home),
                 onMapClick = onNavigateToMap,
                 onFavoritesClick = onNavigateToFavorites,
                 onProfileClick = onNavigateToProfile
@@ -63,8 +66,8 @@ fun HomeScreen(
                 },
                 containerColor = orangeColor,
                 contentColor = Color.White,
-                icon = { Icon(Icons.Default.AutoAwesome, "Sorpréndeme") },
-                text = { Text("Sorpréndeme") }
+                icon = { Icon(Icons.Default.AutoAwesome, null) },
+                text = { Text(stringResource(Res.string.home_surprise_me)) }
             )
         }
     ) { padding ->
@@ -81,7 +84,7 @@ fun HomeScreen(
                 item { HeaderSection(uiState.userName, orangeColor, redColor, onNavigateToNotifications) }
                 
                 item { 
-                    SectionTitle("Categorías")
+                    SectionTitle(stringResource(Res.string.home_categories_title))
                     CategoryList { category ->
                         viewModel.filterByCategory(category)
                     } 
@@ -93,7 +96,7 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        SectionTitle("Sugerencias para ti", paddingValues = PaddingValues(0.dp))
+                        SectionTitle(stringResource(Res.string.home_suggestions_title), paddingValues = PaddingValues(0.dp))
                         Icon(Icons.Default.Whatshot, null, tint = Color.Red, modifier = Modifier.size(20.dp))
                     }
                     Spacer(Modifier.height(8.dp))
@@ -112,7 +115,7 @@ fun HomeScreen(
                 }
 
                 item {
-                    SectionTitle("Cerca de ti")
+                    SectionTitle(stringResource(Res.string.home_near_you_title))
                     if (uiState.userLatitude == null) {
                         Surface(
                             modifier = Modifier
@@ -127,7 +130,7 @@ fun HomeScreen(
                             Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.GpsFixed, null, tint = orangeColor, modifier = Modifier.size(16.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text("Activa tu GPS para ver locales cercanos", fontSize = 12.sp, color = orangeColor)
+                                Text(stringResource(Res.string.home_gps_banner), fontSize = 12.sp, color = orangeColor)
                             }
                         }
                     }
@@ -162,8 +165,8 @@ fun HeaderSection(userName: String, orange: Color, red: Color, onNotificationsCl
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("Hola, $userName 👋", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-                    Text("¿Qué se te antoja hoy?", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(Res.string.home_greeting, userName), color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
+                    Text(stringResource(Res.string.home_question), color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 }
                 IconButton(
                     onClick = onNotificationsClick,
@@ -180,8 +183,8 @@ fun HeaderSection(userName: String, orange: Color, red: Color, onNotificationsCl
             ) {
                 Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Search, null, tint = Color.Gray)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text("Buscar food trucks...", color = Color.LightGray, fontSize = 14.sp)
+                    Spacer(Modifier.width(12.dp))
+                    Text(stringResource(Res.string.home_search_placeholder), color = Color.LightGray, fontSize = 14.sp)
                 }
             }
         }
@@ -201,19 +204,26 @@ fun SectionTitle(title: String, paddingValues: PaddingValues = PaddingValues(16.
 
 @Composable
 fun CategoryList(onCategoryClick: (String) -> Unit) {
-    val categories = listOf("Todos", "Hamburguesas", "Pizza", "Pollo", "Tacos", "Postres")
+    val categories = listOf(
+        Res.string.cat_all to null,
+        Res.string.cat_burgers to "Hamburguesas",
+        Res.string.cat_pizza to "Pizza",
+        Res.string.cat_chicken to "Pollo",
+        Res.string.cat_tacos to "Tacos",
+        Res.string.cat_desserts to "Postres"
+    )
     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(categories) { category ->
+        items(categories) { (res, tag) ->
             Surface(
                 shape = RoundedCornerShape(20.dp), 
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 tonalElevation = 2.dp,
                 modifier = Modifier
                     .padding(vertical = 4.dp)
-                    .clickable { onCategoryClick(category) }
+                    .clickable { onCategoryClick(tag ?: "") }
             ) {
                 Text(
-                    category, 
+                    stringResource(res), 
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), 
                     fontSize = 14.sp, 
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -232,7 +242,6 @@ fun FoodTruckCard(
     onClick: () -> Unit,
     onFavoriteClick: () -> Unit
 ) {
-    // REQUERIMIENTO 2: Datos Reales (Rating dinámico)
     val displayRating = remember(truck.userReviews) {
         if (truck.userReviews.isEmpty()) truck.rating else "%.1f".format(truck.userReviews.map { it.stars }.average())
     }
@@ -267,12 +276,12 @@ fun FoodTruckCard(
                 Row(Modifier.padding(12.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     if (truck.isPromo) {
                         Surface(color = Color.Red.copy(alpha = 0.8f), shape = RoundedCornerShape(8.dp)) {
-                            Text("🔥 PROMO", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                            Text(stringResource(Res.string.promo_badge), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
                         }
                     }
                     if (truck.isOpen) {
                         Surface(color = Color(0xFF2E7D32).copy(alpha = 0.8f), shape = RoundedCornerShape(8.dp)) {
-                            Text("Abierto", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                            Text(stringResource(Res.string.status_open_simple), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
                         }
                     }
                 }
@@ -306,9 +315,9 @@ fun FoodTruckCard(
                 Spacer(Modifier.height(12.dp)); Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(16.dp))
                     Text(" $displayRating", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    Text(" ($displayCount reseñas)", color = Color.Gray, fontSize = 12.sp)
+                    Text(" " + stringResource(Res.string.detail_reviews_count, displayCount.toIntOrNull() ?: 0), color = Color.Gray, fontSize = 12.sp)
                     Spacer(Modifier.width(16.dp)); Icon(Icons.Default.LocationOn, null, tint = Color.Gray, modifier = Modifier.size(16.dp))
-                    Text(" ${truck.distance}", color = Color.Gray, fontSize = 12.sp)
+                    Text(" " + stringResource(Res.string.common_distance, truck.distance), color = Color.Gray, fontSize = 12.sp)
                 }
             }
         }
@@ -347,46 +356,9 @@ fun SmallFoodTruckCard(truck: FoodTruck, onClick: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
                     Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(12.dp))
                     Text(" $displayRating", fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.weight(1f)); Text(truck.distance, fontSize = 10.sp, color = Color.Gray)
+                    Spacer(Modifier.weight(1f)); Text(stringResource(Res.string.common_distance, truck.distance), fontSize = 10.sp, color = Color.Gray)
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun UrbanBitesBottomNav(
-    orange: Color, 
-    currentRoute: String,
-    onHomeClick: () -> Unit = {},
-    onMapClick: () -> Unit = {},
-    onFavoritesClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {}
-) {
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = orange
-    ) {
-        val items = listOf(
-            Triple("Inicio", Icons.Default.Home, onHomeClick),
-            Triple("Mapa", Icons.Default.Map, onMapClick),
-            Triple("Favoritos", Icons.Default.FavoriteBorder, onFavoritesClick),
-            Triple("Perfil", Icons.Default.Person, onProfileClick)
-        )
-        items.forEach { (label, icon, onClick) ->
-            NavigationBarItem(
-                selected = label == currentRoute, 
-                onClick = onClick, 
-                icon = { Icon(icon, null) },
-                label = { Text(label) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = orange,
-                    selectedTextColor = orange,
-                    indicatorColor = orange.copy(alpha = 0.1f),
-                    unselectedIconColor = Color.Gray,
-                    unselectedTextColor = Color.Gray
-                )
-            )
         }
     }
 }

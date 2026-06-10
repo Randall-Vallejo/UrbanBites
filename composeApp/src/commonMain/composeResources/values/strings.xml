@@ -2,32 +2,41 @@
 <resources>
     <string name="app_name">UrbanBites</string>
 
-    <!-- Login -->
-    <string name="login_title">UrbanBites</string>
-    <string name="login_subtitle">Descubre la mejor comida callejera</string>
-    <string name="login_welcome_title">¡Bienvenido de vuelta!</string>
-    <string name="login_welcome_subtitle">Inicia sesión para explorar food trucks</string>
-    <string name="login_email_label">Correo electrónico</string>
-    <string name="login_email_placeholder">tu@email.com</string>
-    <string name="login_password_label">Contraseña</string>
-    <string name="login_button">INICIAR SESIÓN</string>
-    <string name="register_button">Registrarse</string>
-    <string name="continue_as_guest">Continuar como invitado</string>
-    <string name="login_empty_email_error">Ingresa tu correo electrónico</string>
-    <string name="login_empty_password_error">Ingresa tu contraseña</string>
-    <string name="login_invalid_credentials_error">Correo o contraseña incorrectos</string>
-    <string name="login_footer">© 2024 UrbanBites · Cochabamba, Bolivia</string>
+    <!-- Navigation -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_map">Mapa</string>
+    <string name="nav_favorites">Favoritos</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Common -->
+    <string name="common_close">Cerrar</string>
+    <string name="common_search">Buscar...</string>
+    <string name="common_back">Atrás</string>
+    <string name="common_loading">Cargando...</string>
+    <string name="common_distance">%s de distancia</string>
+    <string name="common_anonymous">Anónimo</string>
+
+    <!-- Categories -->
+    <string name="cat_all">Todos</string>
+    <string name="cat_burgers">Hamburguesas</string>
+    <string name="cat_pizza">Pizza</string>
+    <string name="cat_chicken">Pollo</string>
+    <string name="cat_tacos">Tacos</string>
+    <string name="cat_desserts">Postres</string>
 
     <!-- Home -->
     <string name="home_greeting">Hola, %s 👋</string>
     <string name="home_question">¿Qué se te antoja hoy?</string>
-    <string name="home_search_placeholder">Buscar food trucks, comidas...</string>
+    <string name="home_search_placeholder">Buscar food trucks...</string>
     <string name="home_categories_title">Categorías</string>
     <string name="home_suggestions_title">Sugerencias para ti</string>
     <string name="home_near_you_title">Cerca de ti</string>
+    <string name="home_gps_banner">Activa tu GPS para ver locales cercanos</string>
+    <string name="home_surprise_me">Sorpréndeme</string>
 
     <!-- Status -->
     <string name="status_open">Abierto ahora</string>
+    <string name="status_open_simple">Abierto</string>
     <string name="status_closed">Cerrado</string>
     <string name="promo_badge">🔥 PROMO</string>
 
@@ -38,17 +47,37 @@
 
     <!-- Map -->
     <string name="map_search_placeholder">Buscar en el mapa...</string>
-    <string name="map_filter_title">Filtrar por categoría</string>
-    <string name="map_results_title">Resultados de búsqueda</string>
-    <string name="map_no_results">No se encontraron resultados</string>
+    <string name="map_filter_title">Categorías</string>
+    <string name="map_nearby_trucks">Food trucks cercanos</string>
 
     <!-- Detail -->
-    <string name="detail_menu_title">Menú destacado</string>
-    <string name="detail_reviews_title">Reseñas de clientes</string>
-    <string name="detail_location_title">Ubicación</string>
-    <string name="detail_get_directions">Cómo llegar</string>
-    <string name="detail_share">Compartir</string>
-    <string name="detail_gallery">Galería</string>
+    <string name="detail_loading_info">Cargando información del local...</string>
+    <string name="detail_reviews_count">(%d reseñas)</string>
+    <string name="detail_location_city">Cochabamba, Bolivia</string>
+    <string name="detail_reviews_community">Opiniones reales de la comunidad</string>
+    <string name="detail_exact_location">Ubicación exacta</string>
+    <string name="detail_give_opinion">¡Danos tu opinión!</string>
+    <string name="detail_opinion_placeholder">Escribe tu experiencia aquí...</string>
+    <string name="detail_post_review">Publicar reseña</string>
+
+    <!-- Profile -->
+    <string name="profile_my_business">Mi Negocio</string>
+    <string name="profile_register_truck">Registrar mi Food Truck</string>
+    <string name="profile_register_truck_desc">Súmate a la red de UrbanBites</string>
+    <string name="profile_account">Cuenta</string>
+    <string name="profile_favorites">Mis Favoritos</string>
+    <string name="profile_favorites_desc">Food trucks guardados</string>
+    <string name="profile_notifications">Notificaciones</string>
+    <string name="profile_notifications_desc">Gestionar alertas</string>
+    <string name="profile_language">Idioma</string>
+    <string name="profile_language_desc">Español, English, Français</string>
+    <string name="profile_settings">Configuración</string>
+    <string name="profile_settings_desc">Tema, Unidades y GPS</string>
+    <string name="profile_terms">Términos y Condiciones</string>
+    <string name="profile_terms_desc">Legal y Privacidad</string>
+    <string name="profile_logout">Cerrar sesión</string>
+    <string name="profile_logout_desc">Salir de tu cuenta</string>
+    <string name="profile_made_in">Hecho en Cochabamba</string>
 
     <!-- Demo Examen Strings -->
     <string name="demo_title">Demo Examen - UrbanBites</string>
@@ -75,5 +104,4 @@
     <string name="run_worker_btn">Ejecutar Worker Ahora</string>
     <string name="localize_title">6. Localización (Traducciones)</string>
     <string name="text_from_resources">Texto de recursos (Res.string.login_button):</string>
-    <string name="welcome_message">Bienvenido a UrbanBites</string>
 </resources>
