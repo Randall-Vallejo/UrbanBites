@@ -15,6 +15,7 @@ kotlin = "2.1.0"
 material3 = "1.10.0-alpha05"
 koin = "4.1.1"
 kotlinxSerializationJson = "1.8.0"
+kotlinxDatetime = "0.6.1"
 navigationCompose = "2.8.0-alpha10"
 ktor = "3.0.0"
 kamel = "0.9.5"
@@ -29,6 +30,8 @@ firebaseDatabase = "22.0.1"
 firebaseMessaging = "25.0.1"
 firebaseConfig = "22.0.1"
 firebaseStorage = "21.0.1"
+firebaseAuth = "23.1.0"
+facebookSdk = "17.0.0"
 workRuntimeKtx = "2.11.0"
 kotlinStdlib = "2.1.0"
 runner = "1.5.2"
@@ -63,6 +66,7 @@ koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", ver
 
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
@@ -85,9 +89,11 @@ google-play-services-location = { module = "com.google.android.gms:play-services
 compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "composeIconsVersion" }
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "composeIconsVersion" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuth" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config", version.ref = "firebaseConfig" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+facebook-login = { module = "com.facebook.android:facebook-login", version.ref = "facebookSdk" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }

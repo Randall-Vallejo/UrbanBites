@@ -34,7 +34,9 @@ val dataModule = module {
 
     // --- Room Database ---
     single<AppDatabase> {
-        getDatabaseBuilder().build()
+        getDatabaseBuilder()
+            .fallbackToDestructiveMigration(dropAllTables = true) // Limpieza total ante errores
+            .build()
     }
     
     single { get<AppDatabase>().favoriteDao() }

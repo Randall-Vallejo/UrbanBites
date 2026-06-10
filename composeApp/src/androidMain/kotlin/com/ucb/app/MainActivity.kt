@@ -15,10 +15,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.google.android.gms.maps.MapsInitializer
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ucb.app.core.data.notification.LocalNotificationHelper
 import com.ucb.app.core.data.worker.MyScheduler
@@ -32,6 +32,9 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        // Inicialización prematura de Maps para evitar crashes con iconos personalizados
+        MapsInitializer.initialize(applicationContext)
 
         createNotificationChannel()
         checkNotificationPermission()
@@ -59,7 +62,6 @@ class MainActivity : ComponentActivity() {
                 onRunWorker = { scheduler.runNow() },
                 fcmToken = fcmToken,
                 onOpenSystemSettings = {
-                    // Requerimiento 4: Acceso directo a Ajustes del Sistema
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                         data = Uri.fromParts("package", packageName, null)
                     }

@@ -34,7 +34,9 @@ fun ProfileScreen(
     onNavigateToNotifications: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToLanguage: () -> Unit,
+    onNavigateToLanguageChange: () -> Unit = {},
     onNavigateToAddFoodTruck: () -> Unit,
+    onNavigateToTerms: () -> Unit,
     onLogout: () -> Unit
 ) {
     val userName by UserSession.userName.collectAsState()
@@ -50,7 +52,8 @@ fun ProfileScreen(
                 currentRoute = "Perfil",
                 onHomeClick = onNavigateToHome,
                 onMapClick = onNavigateToMap,
-                onFavoritesClick = onNavigateToFavorites
+                onFavoritesClick = onNavigateToFavorites,
+                onProfileClick = {}
             )
         }
     ) { padding ->
@@ -149,6 +152,12 @@ fun ProfileScreen(
                     onClick = onNavigateToSettings
                 )
                 ProfileMenuItem(
+                    icon = Icons.Default.Description, 
+                    title = "Términos y Condiciones", 
+                    subtitle = "Legal y Privacidad", 
+                    onClick = onNavigateToTerms
+                )
+                ProfileMenuItem(
                     icon = Icons.Default.Logout, 
                     title = "Cerrar sesión", 
                     subtitle = "Salir de tu cuenta", 
@@ -184,31 +193,55 @@ fun ProfileMenuItem(
     title: String,
     subtitle: String,
     isLast: Boolean = false,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ) {
-    Card(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clickable { onClick() }
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, null, tint = if (title == "Cerrar sesión") Color.Red else Color(0xFFFF5722), modifier = Modifier.size(24.dp))
+            Surface(
+                modifier = Modifier.size(40.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.padding(10.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(subtitle, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontSize = 12.sp)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
-            Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
+            // Cambiado a KeyboardArrowRight para evitar errores de referencia
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = null,
+                tint = Color.LightGray
+            )
+        }
+        if (!isLast) {
+            HorizontalDivider(
+                modifier = Modifier.padding(start = 56.dp),
+                thickness = 0.5.dp,
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
         }
     }
 }

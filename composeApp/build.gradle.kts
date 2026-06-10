@@ -51,6 +51,8 @@ kotlin {
             implementation(libs.firebase.database)
             implementation(libs.firebase.config)
             implementation(libs.firebase.storage)
+            implementation(libs.firebase.auth)
+            implementation(libs.facebook.login)
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.1")
             implementation(libs.androidx.work.runtime.ktx)
             // Firebase Remote Config para Android
@@ -73,6 +75,7 @@ kotlin {
 
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.datetime)
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)

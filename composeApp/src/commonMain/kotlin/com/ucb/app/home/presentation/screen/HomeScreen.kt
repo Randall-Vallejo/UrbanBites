@@ -33,7 +33,8 @@ fun HomeScreen(
     onTruckClick: (String) -> Unit = {},
     onNavigateToMap: () -> Unit = {},
     onNavigateToFavorites: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {}
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToNotifications: () -> Unit = {}
 ) {
     val uiState by viewModel.state.collectAsState()
     val favorites by viewModel.favorites.collectAsState()
@@ -77,7 +78,7 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                item { HeaderSection(uiState.userName, orangeColor, redColor) }
+                item { HeaderSection(uiState.userName, orangeColor, redColor, onNavigateToNotifications) }
                 
                 item { 
                     SectionTitle("Categorías")
@@ -146,7 +147,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun HeaderSection(userName: String, orange: Color, red: Color) {
+fun HeaderSection(userName: String, orange: Color, red: Color, onNotificationsClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -165,7 +166,7 @@ fun HeaderSection(userName: String, orange: Color, red: Color) {
                     Text("¿Qué se te antoja hoy?", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 }
                 IconButton(
-                    onClick = {},
+                    onClick = onNotificationsClick,
                     modifier = Modifier.background(Color.White.copy(alpha = 0.2f), CircleShape)
                 ) {
                     Icon(Icons.Default.Notifications, null, tint = Color.White)
@@ -231,6 +232,14 @@ fun FoodTruckCard(
     onClick: () -> Unit,
     onFavoriteClick: () -> Unit
 ) {
+    // REQUERIMIENTO 2: Datos Reales (Rating dinámico)
+    val displayRating = remember(truck.userReviews) {
+        if (truck.userReviews.isEmpty()) truck.rating else "%.1f".format(truck.userReviews.map { it.stars }.average())
+    }
+    val displayCount = remember(truck.userReviews) {
+        if (truck.userReviews.isEmpty()) truck.reviewsCount else truck.userReviews.size.toString()
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
@@ -296,8 +305,8 @@ fun FoodTruckCard(
                 }
                 Spacer(Modifier.height(12.dp)); Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(16.dp))
-                    Text(" ${truck.rating}", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    Text(" (${truck.reviewsCount} reseñas)", color = Color.Gray, fontSize = 12.sp)
+                    Text(" $displayRating", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    Text(" ($displayCount reseñas)", color = Color.Gray, fontSize = 12.sp)
                     Spacer(Modifier.width(16.dp)); Icon(Icons.Default.LocationOn, null, tint = Color.Gray, modifier = Modifier.size(16.dp))
                     Text(" ${truck.distance}", color = Color.Gray, fontSize = 12.sp)
                 }
@@ -308,6 +317,9 @@ fun FoodTruckCard(
 
 @Composable
 fun SmallFoodTruckCard(truck: FoodTruck, onClick: () -> Unit) {
+    val displayRating = remember(truck.userReviews) {
+        if (truck.userReviews.isEmpty()) truck.rating else "%.1f".format(truck.userReviews.map { it.stars }.average())
+    }
     Card(
         modifier = Modifier.width(160.dp).clickable { onClick() }, 
         shape = RoundedCornerShape(16.dp), 
@@ -334,7 +346,7 @@ fun SmallFoodTruckCard(truck: FoodTruck, onClick: () -> Unit) {
                 Text(truck.category, fontSize = 10.sp, color = Color.Gray)
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
                     Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(12.dp))
-                    Text(" ${truck.rating}", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    Text(" $displayRating", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.weight(1f)); Text(truck.distance, fontSize = 10.sp, color = Color.Gray)
                 }
             }

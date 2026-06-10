@@ -45,7 +45,6 @@ class HomeViewModel(
     }
 
     private fun observePreferences() {
-        // Requerimiento 4: Escuchar cambios en unidades de medida
         viewModelScope.launch {
             UserPreferences.distanceUnit.collect { applyFilters() }
         }
@@ -67,17 +66,43 @@ class HomeViewModel(
                     try {
                         allTrucks = json.decodeFromString<List<FoodTruck>>(jsonData)
                         applyFilters()
-                    } catch (e: Exception) { seedDatabase() }
-                } else { seedDatabase() }
+                    } catch (e: Exception) { _state.update { it.copy(isLoading = false) } }
+                } else { _state.update { it.copy(isLoading = false) } }
             }
         }
     }
 
     fun updateUserLocation(lat: Double, lon: Double) {
-        if (userLat == lat && userLon == lon) return 
         userLat = lat; userLon = lon
         _state.update { it.copy(userLatitude = lat, userLongitude = lon) }
         applyFilters()
+    }
+
+    fun addReview(truckId: String, stars: Int, comment: String) {
+        viewModelScope.launch {
+            val truckIndex = allTrucks.indexOfFirst { it.id == truckId }
+            if (truckIndex != -1) {
+                val truck = allTrucks[truckIndex]
+                val newReview = UserReview(
+                    userName = UserSession.userName.value,
+                    stars = stars,
+                    comment = comment
+                )
+                val updatedReviews = truck.userReviews.toMutableList().apply { add(newReview) }
+                
+                val newRating = updatedReviews.map { it.stars }.average()
+                val updatedTruck = truck.copy(
+                    userReviews = updatedReviews,
+                    rating = newRating.toOneDecimal(),
+                    reviewsCount = updatedReviews.size.toString()
+                )
+                
+                val updatedList = allTrucks.toMutableList().apply { set(truckIndex, updatedTruck) }
+                firebaseManager.saveData("food_trucks_v3", json.encodeToString(updatedList))
+                
+                notificationProvider.showLocalNotification("¡Gracias!", "Tu reseña para ${truck.name} ha sido publicada.")
+            }
+        }
     }
 
     fun getRandomTruck(): FoodTruck? = allTrucks.filter { it.isOpen }.randomOrNull()
@@ -89,9 +114,16 @@ class HomeViewModel(
                 favoriteDao.deleteById(truck.id)
             } else {
                 favoriteDao.insertFavorite(
-                    FavoriteTruckEntity(truck.id, truck.name, truck.category, truck.rating, truck.distance, truck.isOpen)
+                    FavoriteTruckEntity(
+                        id = truck.id,
+                        name = truck.name,
+                        category = truck.category,
+                        rating = truck.rating,
+                        distance = truck.distance,
+                        isOpen = truck.isOpen,
+                        imageUrl = truck.imageUrl
+                    )
                 )
-                // Requerimiento 2: Solo si las notificaciones locales están activas
                 if (UserPreferences.localFavoritesEnabled.value) {
                     notificationProvider.showLocalNotification("¡Favorito!", "Añadiste ${truck.name}")
                 }
@@ -131,10 +163,10 @@ class HomeViewModel(
 
     private fun formatDistance(meters: Double, unit: DistanceUnit): String {
         return if (unit == DistanceUnit.KM) {
-            if (meters >= 1000) "~${(meters / 1000.0).toOneDecimal()} km" else "~${meters.toInt()} m"
+            if (meters >= 1000) "${(meters / 1000.0).toOneDecimal()} km" else "${meters.toInt()} m"
         } else {
             val miles = meters * 0.000621371
-            "~${miles.toOneDecimal()} mi"
+            "${miles.toOneDecimal()} mi"
         }
     }
 
@@ -147,8 +179,4 @@ class HomeViewModel(
     }
 
     private fun Double.toOneDecimal(): String = (round(this * 10) / 10.0).toString()
-
-    private fun seedDatabase() {
-        // ... (Tu lógica de seed actual se mantiene igual)
-    }
 }
