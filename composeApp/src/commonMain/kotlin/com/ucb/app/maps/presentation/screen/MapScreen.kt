@@ -11,5 +11,7 @@ expect fun MapScreen(
     onTruckClick: (String) -> Unit = {},
     centerLatitude: Double? = null,
     centerLongitude: Double? = null,
-    onLocationResult: (Double, Double) -> Unit = { _, _ -> }
+    onLocationResult: (Double, Double) -> Unit = { _, _ -> },
+    isPickerMode: Boolean = false,
+    onMapClick: (Double, Double) -> Unit = { _, _ -> }
 )

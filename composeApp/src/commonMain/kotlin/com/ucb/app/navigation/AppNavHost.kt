@@ -14,6 +14,7 @@ import com.ucb.app.home.presentation.screen.ProfileScreen
 import com.ucb.app.home.presentation.screen.NotificationSettingsScreen
 import com.ucb.app.home.presentation.screen.SettingsScreen
 import com.ucb.app.home.presentation.screen.LanguageScreen
+import com.ucb.app.home.presentation.screen.AddFoodTruckScreen
 import com.ucb.app.maps.presentation.screen.MapExploreScreen
 import com.ucb.app.login.presentation.screen.LoginScreen
 import com.ucb.app.login.presentation.screen.RegisterScreen
@@ -116,12 +117,18 @@ fun AppNavHost(
                 onNavigateToNotifications = { navController.navigate(NavRoute.NotificationSettings) },
                 onNavigateToSettings = { navController.navigate(NavRoute.Settings) },
                 onNavigateToLanguage = { navController.navigate(NavRoute.Language) },
+                onNavigateToAddFoodTruck = {
+                    navController.navigate(NavRoute.AddFoodTruck)
+                },
                 onLogout = {
                     navController.navigate(NavRoute.Login) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
             )
+        }
+        composable<NavRoute.AddFoodTruck> {
+            AddFoodTruckScreen(onBack = { navController.popBackStack() })
         }
         composable<NavRoute.NotificationSettings> {
             NotificationSettingsScreen(onBack = { navController.popBackStack() })

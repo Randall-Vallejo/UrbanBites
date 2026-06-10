@@ -38,4 +38,7 @@ sealed class NavRoute {
 
     @Serializable
     object Demo: NavRoute()
+
+    @Serializable
+    object AddFoodTruck: NavRoute()
 }

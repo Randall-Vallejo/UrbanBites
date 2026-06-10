@@ -4,6 +4,8 @@ import com.ucb.app.core.data.db.AppDatabase
 import com.ucb.app.core.data.db.getDatabaseBuilder
 import com.ucb.app.firebase.data.datasource.FirebaseManager
 import com.ucb.app.firebase.data.datasource.RemoteConfigManager
+import com.ucb.app.home.data.repository.FoodTruckRepositoryImpl
+import com.ucb.app.home.domain.repository.FoodTruckRepository
 import com.ucb.app.login.data.repository.AuthenticationRepositoryImpl
 import com.ucb.app.login.domain.repository.AuthenticationRepository
 import io.ktor.client.*
@@ -37,6 +39,7 @@ val dataModule = module {
     
     single { get<AppDatabase>().favoriteDao() }
 
-    // --- Auth ---
+    // --- Repositories ---
     single<AuthenticationRepository> { AuthenticationRepositoryImpl() }
+    single<FoodTruckRepository> { FoodTruckRepositoryImpl(get()) }
 }

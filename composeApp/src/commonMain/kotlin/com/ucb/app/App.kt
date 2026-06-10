@@ -7,6 +7,9 @@ import androidx.compose.ui.graphics.Color
 import com.ucb.app.core.preferences.AppTheme
 import com.ucb.app.core.preferences.UserPreferences
 import com.ucb.app.navigation.AppNavHost
+import io.kamel.core.config.KamelConfig
+import io.kamel.image.config.Default
+import io.kamel.image.config.LocalKamelConfig
 
 @Composable
 fun App(
@@ -16,6 +19,10 @@ fun App(
     fcmToken: String = "",
     onOpenSystemSettings: () -> Unit = {}
 ) {
+    // Usamos KamelConfig.Default que ya incluye soporte para Ktor/HTTP por defecto.
+    // Esto resuelve el error "Unresolved reference: httpFetcher" al evitar la configuración manual.
+    val kamelConfig = remember { KamelConfig.Default }
+
     val appTheme by UserPreferences.appTheme.collectAsState()
     val useDarkTheme = when (appTheme) {
         AppTheme.DARK -> true
@@ -46,18 +53,20 @@ fun App(
         onSurfaceVariant = Color.Gray
     )
 
-    MaterialTheme(
-        colorScheme = if (useDarkTheme) darkColors else lightColors
-    ) {
-        // El Surface base asegura que el fondo sea del color correcto en toda la app
-        Surface(color = MaterialTheme.colorScheme.background) {
-            AppNavHost(
-                destination = destination,
-                onShowLocalNotification = onShowLocalNotification,
-                onRunWorker = onRunWorker,
-                fcmToken = fcmToken,
-                onOpenSystemSettings = onOpenSystemSettings
-            )
+    CompositionLocalProvider(LocalKamelConfig provides kamelConfig) {
+        MaterialTheme(
+            colorScheme = if (useDarkTheme) darkColors else lightColors
+        ) {
+            // El Surface base asegura que el fondo sea del color correcto en toda la app
+            Surface(color = MaterialTheme.colorScheme.background) {
+                AppNavHost(
+                    destination = destination,
+                    onShowLocalNotification = onShowLocalNotification,
+                    onRunWorker = onRunWorker,
+                    fcmToken = fcmToken,
+                    onOpenSystemSettings = onOpenSystemSettings
+                )
+            }
         }
     }
 }

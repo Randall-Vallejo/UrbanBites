@@ -21,7 +21,8 @@ object UserPreferences {
     private val _distanceUnit = MutableStateFlow(DistanceUnit.KM)
     val distanceUnit = _distanceUnit.asStateFlow()
 
-    private val _appTheme = MutableStateFlow(AppTheme.SYSTEM)
+    // Requerimiento 6: Tema Claro por defecto
+    private val _appTheme = MutableStateFlow(AppTheme.LIGHT)
     val appTheme = _appTheme.asStateFlow()
 
     private val _selectedLanguage = MutableStateFlow("Español")

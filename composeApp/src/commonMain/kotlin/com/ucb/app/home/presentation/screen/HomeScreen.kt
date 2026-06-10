@@ -17,11 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucb.app.home.presentation.viewmodel.HomeViewModel
 import com.ucb.app.home.domain.model.FoodTruck
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -40,7 +43,7 @@ fun HomeScreen(
     val lightYellow = Color(0xFFFFF9C4)
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background, // FUERZA FONDO DEL TEMA
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = { 
             UrbanBitesBottomNav(
                 orange = orangeColor, 
@@ -239,7 +242,19 @@ fun FoodTruckCard(
     ) {
         Column {
             Box(modifier = Modifier.fillMaxWidth().height(160.dp).background(Color.LightGray)) {
-                Icon(Icons.Default.Restaurant, null, Modifier.align(Alignment.Center).size(50.dp), Color.White)
+                if (truck.imageUrl.isNotBlank()) {
+                    KamelImage(
+                        resource = asyncPainterResource(truck.imageUrl),
+                        contentDescription = truck.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        onLoading = { Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = orange, strokeWidth = 2.dp) } },
+                        onFailure = { Icon(Icons.Default.Restaurant, null, Modifier.align(Alignment.Center).size(50.dp), Color.White) }
+                    )
+                } else {
+                    Icon(Icons.Default.Restaurant, null, Modifier.align(Alignment.Center).size(50.dp), Color.White)
+                }
+
                 Row(Modifier.padding(12.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     if (truck.isPromo) {
                         Surface(color = Color.Red.copy(alpha = 0.8f), shape = RoundedCornerShape(8.dp)) {
@@ -267,7 +282,7 @@ fun FoodTruckCard(
                         )
                     }
                 }
-                if (truck.promoText.isNotBlank()) {
+                if (truck.promoTitle.isNotBlank()) {
                     Spacer(Modifier.height(12.dp)); Surface(
                         color = orange.copy(alpha = 0.1f), 
                         shape = RoundedCornerShape(12.dp), 
@@ -275,7 +290,7 @@ fun FoodTruckCard(
                     ) {
                         Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.EmojiEvents, null, tint = orange, modifier = Modifier.size(16.dp))
-                            Spacer(Modifier.width(8.dp)); Text(truck.promoText, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                            Spacer(Modifier.width(8.dp)); Text(truck.promoTitle, fontSize = 12.sp, fontWeight = FontWeight.Medium)
                         }
                     }
                 }
@@ -300,7 +315,20 @@ fun SmallFoodTruckCard(truck: FoodTruck, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-            Box(modifier = Modifier.fillMaxWidth().height(100.dp).background(Color.LightGray)) { Icon(Icons.Default.Fastfood, null, Modifier.align(Alignment.Center), Color.White) }
+            Box(modifier = Modifier.fillMaxWidth().height(100.dp).background(Color.LightGray)) {
+                if (truck.imageUrl.isNotBlank()) {
+                    KamelImage(
+                        resource = asyncPainterResource(truck.imageUrl),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        onLoading = { Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(strokeWidth = 1.dp, modifier = Modifier.size(16.dp)) } },
+                        onFailure = { Icon(Icons.Default.Fastfood, null, Modifier.align(Alignment.Center), Color.White) }
+                    )
+                } else {
+                    Icon(Icons.Default.Fastfood, null, Modifier.align(Alignment.Center), Color.White)
+                }
+            }
             Column(Modifier.padding(8.dp)) {
                 Text(truck.name, fontSize = 14.sp, fontWeight = FontWeight.Bold, maxLines = 1, color = MaterialTheme.colorScheme.onSurface)
                 Text(truck.category, fontSize = 10.sp, color = Color.Gray)

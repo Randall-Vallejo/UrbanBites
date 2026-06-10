@@ -34,6 +34,7 @@ fun ProfileScreen(
     onNavigateToNotifications: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToLanguage: () -> Unit,
+    onNavigateToAddFoodTruck: () -> Unit,
     onLogout: () -> Unit
 ) {
     val userName by UserSession.userName.collectAsState()
@@ -57,7 +58,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(MaterialTheme.colorScheme.background) // Dinámico para Modo Oscuro
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
         ) {
             // Header Section
@@ -102,6 +103,27 @@ fun ProfileScreen(
 
             // Menu Options
             Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                Text(
+                    text = "Mi Negocio",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = orangeColor,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                ProfileMenuItem(
+                    icon = Icons.Default.Storefront, 
+                    title = "Registrar mi Food Truck", 
+                    subtitle = "Súmate a la red de UrbanBites", 
+                    onClick = onNavigateToAddFoodTruck
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Cuenta",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = orangeColor,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
                 ProfileMenuItem(
                     icon = Icons.Default.Favorite, 
                     title = "Mis Favoritos", 
@@ -171,7 +193,7 @@ fun ProfileMenuItem(
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface, // Dinámico
+            containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

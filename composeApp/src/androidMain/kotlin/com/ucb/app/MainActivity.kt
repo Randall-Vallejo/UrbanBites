@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ucb.app.core.data.notification.LocalNotificationHelper
 import com.ucb.app.core.data.worker.MyScheduler
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
     private var fcmToken by mutableStateOf("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 

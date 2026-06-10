@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +28,8 @@ import com.ucb.app.home.domain.model.MenuDish
 import com.ucb.app.home.domain.model.UserReview
 import com.ucb.app.home.presentation.viewmodel.HomeViewModel
 import com.ucb.app.maps.presentation.screen.MapScreen
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -76,7 +79,24 @@ fun FoodTruckDetailScreen(
             // Header Image
             item {
                 Box(modifier = Modifier.fillMaxWidth().height(250.dp).background(Color.LightGray)) {
-                    Icon(Icons.Default.Restaurant, null, Modifier.align(Alignment.Center).size(60.dp), Color.White)
+                    if (truck.imageUrl.isNotBlank()) {
+                        KamelImage(
+                            resource = asyncPainterResource(truck.imageUrl),
+                            contentDescription = truck.name,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop,
+                            onLoading = {
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator(color = orangeColor, strokeWidth = 2.dp)
+                                }
+                            },
+                            onFailure = {
+                                Icon(Icons.Default.Restaurant, null, Modifier.align(Alignment.Center).size(60.dp), Color.White)
+                            }
+                        )
+                    } else {
+                        Icon(Icons.Default.Restaurant, null, Modifier.align(Alignment.Center).size(60.dp), Color.White)
+                    }
                     
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -89,7 +109,6 @@ fun FoodTruckDetailScreen(
                             Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Atrás", tint = Color.Black)
                         }
                         
-                        // CORRECCIÓN FAVORITOS: El corazón cambia de color y funciona
                         IconButton(
                             onClick = { viewModel.toggleFavorite(truck) },
                             modifier = Modifier.background(Color.White.copy(0.7f), CircleShape)
@@ -139,7 +158,9 @@ fun FoodTruckDetailScreen(
                     Spacer(Modifier.height(12.dp))
 
                     InfoRow(Icons.Default.LocationOn, "Cochabamba, Bolivia")
-                    InfoRow(Icons.Default.AccessTime, "10:00 AM - 10:00 PM")
+                    val openTime = if (truck.openingTime.isNotBlank()) truck.openingTime else "10:00 AM"
+                    val closeTime = if (truck.closingTime.isNotBlank()) truck.closingTime else "10:00 PM"
+                    InfoRow(Icons.Default.AccessTime, "$openTime - $closeTime")
                     InfoRow(Icons.Default.NearMe, "${truck.distance} de distancia")
                 }
             }
@@ -158,8 +179,8 @@ fun FoodTruckDetailScreen(
                                     Icon(Icons.Default.TrendingUp, null, tint = Color.White)
                                     Spacer(Modifier.width(12.dp))
                                     Column {
-                                        Text("¡Promoción Especial!", color = Color.White, fontWeight = FontWeight.Bold)
-                                        Text(truck.promoText, color = Color.White.copy(0.9f), fontSize = 12.sp)
+                                        Text(if (truck.promoTitle.isNotBlank()) truck.promoTitle else "¡Promoción Especial!", color = Color.White, fontWeight = FontWeight.Bold)
+                                        Text(truck.promoDescription, color = Color.White.copy(0.9f), fontSize = 12.sp)
                                     }
                                 }
                             }
@@ -167,19 +188,22 @@ fun FoodTruckDetailScreen(
                         Spacer(Modifier.height(12.dp))
                     }
 
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFFFFF9C4),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.EmojiEvents, null, tint = orangeColor)
-                            Spacer(Modifier.width(12.dp))
-                            Column {
-                                Text("Combo Destacado", fontWeight = FontWeight.Bold)
-                                Text("Combo familiar disponible en este local", fontSize = 12.sp, color = Color.DarkGray)
+                    if (truck.comboTitle.isNotBlank()) {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color(0xFFFFF9C4),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.EmojiEvents, null, tint = orangeColor)
+                                Spacer(Modifier.width(12.dp))
+                                Column {
+                                    Text(truck.comboTitle, fontWeight = FontWeight.Bold)
+                                    Text(truck.comboDescription, fontSize = 12.sp, color = Color.DarkGray)
+                                }
                             }
                         }
+                        Spacer(Modifier.height(12.dp))
                     }
                 }
             }
@@ -190,7 +214,18 @@ fun FoodTruckDetailScreen(
                 LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(3) {
                         Box(Modifier.size(150.dp).clip(RoundedCornerShape(16.dp)).background(Color(0xFFEEEEEE))) {
-                            Icon(Icons.Default.Image, null, Modifier.align(Alignment.Center), Color.Gray)
+                            if (truck.imageUrl.isNotBlank()) {
+                                KamelImage(
+                                    resource = asyncPainterResource(truck.imageUrl),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop,
+                                    onLoading = { CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).size(20.dp), strokeWidth = 2.dp) },
+                                    onFailure = { Icon(Icons.Default.Image, null, Modifier.align(Alignment.Center), Color.Gray) }
+                                )
+                            } else {
+                                Icon(Icons.Default.Image, null, Modifier.align(Alignment.Center), Color.Gray)
+                            }
                         }
                     }
                 }

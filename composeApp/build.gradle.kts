@@ -50,10 +50,12 @@ kotlin {
             
             implementation(libs.firebase.database)
             implementation(libs.firebase.config)
+            implementation(libs.firebase.storage)
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.1")
             implementation(libs.androidx.work.runtime.ktx)
             // Firebase Remote Config para Android
             implementation("com.google.firebase:firebase-config-ktx:21.6.3")
+            implementation("androidx.core:core-splashscreen:1.0.1")
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
