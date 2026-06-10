@@ -2,6 +2,7 @@ package com.ucb.app.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ucb.app.core.session.UserSession
 import com.ucb.app.login.domain.usecase.DoLoginUseCase
 import com.ucb.app.login.presentation.state.LoginEffect
 import com.ucb.app.login.presentation.state.LoginEvent
@@ -28,6 +29,7 @@ class LoginViewModel(
         when(event) {
             LoginEvent.OnLoginClicked -> validateAndLogin()
             LoginEvent.OnContinueAsGuestClicked -> {
+                UserSession.updateSession("Invitado", "invitado@urbanbites.com")
                 emit(LoginEffect.NavigateToHome)
             }
             LoginEvent.OnTogglePasswordVisibilityClicked -> {
@@ -61,8 +63,14 @@ class LoginViewModel(
             
             delay(1000)
 
-            // Credenciales oficiales de UrbanBites - Ahora más flexibles
             if ((email == "admin" || email == "admin@urbanbites.com") && password == "123456") {
+                UserSession.updateSession("Administrador", email)
+                _state.update { it.copy(isLoading = false, isLoggedIn = true) }
+                emit(LoginEffect.NavigateToHome)
+            } else if (email.contains("@")) {
+                // Permitir cualquier email para facilitar pruebas
+                val name = email.split("@")[0].capitalize()
+                UserSession.updateSession(name, email)
                 _state.update { it.copy(isLoading = false, isLoggedIn = true) }
                 emit(LoginEffect.NavigateToHome)
             } else {

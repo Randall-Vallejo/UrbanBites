@@ -27,10 +27,7 @@ actual class FirebaseManager actual constructor() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Si hay error de permisos (muy común en Firebase recién creado), 
-                // enviamos null en lugar de cerrar el flow con error para evitar el crash.
                 trySend(null)
-                // close(error.toException()) // Comentado para evitar el crash en el examen
             }
         }
         database.child(path).addValueEventListener(listener)

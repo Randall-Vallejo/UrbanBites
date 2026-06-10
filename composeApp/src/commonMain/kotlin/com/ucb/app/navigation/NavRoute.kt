@@ -22,8 +22,23 @@ sealed class NavRoute {
     object Favorites: NavRoute()
 
     @Serializable
+    object Profile: NavRoute()
+
+    @Serializable
+    object NotificationSettings: NavRoute()
+
+    @Serializable
+    object Settings: NavRoute()
+
+    @Serializable
+    object Language: NavRoute()
+
+    @Serializable
     data class Detail(val truckName: String): NavRoute()
 
     @Serializable
     object Demo: NavRoute()
+
+    @Serializable
+    object AddFoodTruck: NavRoute()
 }

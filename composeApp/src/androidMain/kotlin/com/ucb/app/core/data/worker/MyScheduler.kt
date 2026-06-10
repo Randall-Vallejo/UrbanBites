@@ -7,24 +7,27 @@ import java.util.concurrent.TimeUnit
 class MyScheduler(private val context: Context) {
 
     fun start() {
-        val request = PeriodicWorkRequestBuilder<MyWorker>(
+        // Tarea periódica solicitada: CheckNearbyTrucksWorker
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiresBatteryNotLow(true)
+            .build()
+
+        val request = PeriodicWorkRequestBuilder<CheckNearbyTrucksWorker>(
             15, TimeUnit.MINUTES
-        ).setConstraints(
-            Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
-        ).build()
+        ).setConstraints(constraints)
+        .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            "urban_bites_periodic_work",
+            "urban_bites_nearby_check",
             ExistingPeriodicWorkPolicy.KEEP,
             request
         )
     }
 
-    // Método para prueba rápida (ejecuta una vez inmediatamente)
+    // Método para ejecución inmediata de prueba
     fun runNow() {
-        val request = OneTimeWorkRequestBuilder<MyWorker>().build()
+        val request = OneTimeWorkRequestBuilder<CheckNearbyTrucksWorker>().build()
         WorkManager.getInstance(context).enqueue(request)
     }
 }

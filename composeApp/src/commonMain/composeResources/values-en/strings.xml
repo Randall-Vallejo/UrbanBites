@@ -2,7 +2,78 @@
 <resources>
     <string name="app_name">UrbanBites</string>
 
-    <string name="add_to_cart">Add to cart</string>
+    <!-- Login -->
+    <string name="login_title">UrbanBites</string>
+    <string name="login_subtitle">Discover the best street food</string>
+    <string name="login_welcome_title">Welcome back!</string>
+    <string name="login_welcome_subtitle">Log in to explore food trucks</string>
+    <string name="login_email_label">Email Address</string>
+    <string name="login_email_placeholder">you@email.com</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_button">SIGN IN</string>
+    <string name="register_button">Register</string>
+    <string name="continue_as_guest">Continue as guest</string>
+    <string name="login_empty_email_error">Enter your email address</string>
+    <string name="login_empty_password_error">Enter your password</string>
+    <string name="login_invalid_credentials_error">Incorrect email or password</string>
+    <string name="login_footer">© 2024 UrbanBites · Cochabamba, Bolivia</string>
 
+    <!-- Home -->
+    <string name="home_greeting">Hi, %s 👋</string>
+    <string name="home_question">What are you craving today?</string>
+    <string name="home_search_placeholder">Search food trucks, meals...</string>
+    <string name="home_categories_title">Categories</string>
+    <string name="home_suggestions_title">Suggestions for you</string>
+    <string name="home_near_you_title">Near you</string>
+
+    <!-- Status -->
+    <string name="status_open">Open now</string>
+    <string name="status_closed">Closed</string>
+    <string name="promo_badge">🔥 PROMO</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">My Favorites</string>
+    <string name="favorites_count">%d food trucks saved</string>
+    <string name="favorites_empty">You don\'t have any favorites yet</string>
+
+    <!-- Map -->
+    <string name="map_search_placeholder">Search on the map...</string>
+    <string name="map_filter_title">Filter by category</string>
+    <string name="map_results_title">Search results</string>
+    <string name="map_no_results">No results found</string>
+
+    <!-- Detail -->
+    <string name="detail_menu_title">Featured menu</string>
+    <string name="detail_reviews_title">Customer reviews</string>
+    <string name="detail_location_title">Location</string>
+    <string name="detail_get_directions">How to get there</string>
+    <string name="detail_share">Share</string>
+    <string name="detail_gallery">Gallery</string>
+
+    <!-- Demo Examen Strings -->
+    <string name="demo_title">Exam Demo - UrbanBites</string>
+    <string name="room_title">1. Room (Local Persistence)</string>
+    <string name="room_input_label">Data for Room</string>
+    <string name="save_btn">Save</string>
+    <string name="clear_btn">Clear</string>
+    <string name="room_items_label">Items in Room:</string>
+    <string name="firebase_realtime_title">2. Firebase Realtime Database</string>
+    <string name="firebase_input_label">Message to Firebase</string>
+    <string name="send_realtime_btn">Send to Realtime</string>
+    <string name="firebase_last_value_label">Last value (Realtime):</string>
+    <string name="remote_config_title">3. Firebase Remote Config</string>
+    <string name="cloud_value_label">Value from cloud:</string>
+    <string name="update_config_btn">Update Config</string>
+    <string name="local_notif_title">4. Local Notification (Internal)</string>
+    <string name="local_notif_desc">App-generated notification test without external server.</string>
+    <string name="launch_local_notif_btn">Launch Local Notification</string>
+    <string name="external_notif_title">7. External Notification (FCM Push)</string>
+    <string name="fcm_token_device_label">Device FCM Token (Click to copy):</string>
+    <string name="fcm_instructions">Use this token in Firebase Console to test external sends.</string>
+    <string name="background_services_title">5. Background Services (Worker)</string>
+    <string name="current_status_label">Current status:</string>
+    <string name="run_worker_btn">Run Worker Now</string>
+    <string name="localize_title">6. Localization (Translations)</string>
+    <string name="text_from_resources">Text from resources (Res.string.login_button):</string>
     <string name="welcome_message">Welcome to UrbanBites</string>
 </resources>

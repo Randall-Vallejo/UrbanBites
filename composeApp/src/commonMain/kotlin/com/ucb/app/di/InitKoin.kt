@@ -11,6 +11,7 @@ fun initKoin(config: KoinAppDeclaration? = null) {
 }
 
 fun getModules() = listOf(
+    platformModule, // Agregado para resolver dependencias de plataforma
     dataModule,
     domainModule,
     presentationModule

@@ -1,13 +1,24 @@
 package com.ucb.app
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ucb.app.core.data.notification.LocalNotificationHelper
 import com.ucb.app.core.data.worker.MyScheduler
@@ -18,16 +29,18 @@ class MainActivity : ComponentActivity() {
     private var fcmToken by mutableStateOf("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        createNotificationChannel()
+        checkNotificationPermission()
 
         val scheduler = MyScheduler(this)
         val notificationHelper = LocalNotificationHelper(this)
 
-        // Iniciamos el Scheduler de tareas en segundo plano
         scheduler.start()
 
-        // Obtener el Token FCM para mostrarlo en la demo
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 fcmToken = task.result
@@ -41,28 +54,38 @@ class MainActivity : ComponentActivity() {
             App(
                 destination = destination,
                 onShowLocalNotification = {
-                    notificationHelper.showNotification(
-                        "Notificación Interna", 
-                        "Esta es una prueba local sin Firebase."
-                    )
+                    notificationHelper.showNotification("UrbanBites", "¡Prueba local!")
                 },
-                onRunWorker = {
-                    scheduler.runNow()
-                },
-                fcmToken = fcmToken
+                onRunWorker = { scheduler.runNow() },
+                fcmToken = fcmToken,
+                onOpenSystemSettings = {
+                    // Requerimiento 4: Acceso directo a Ajustes del Sistema
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", packageName, null)
+                    }
+                    startActivity(intent)
+                }
             )
         }
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        destination = intent.getStringExtra("destination")
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "urban_bites_channel_v5", 
+                "Urban Bites VIP", 
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
-}
 
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App()
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 101)
+            }
+        }
+    }
 }

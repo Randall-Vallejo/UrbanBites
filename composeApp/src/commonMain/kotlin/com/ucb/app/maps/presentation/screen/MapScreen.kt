@@ -10,5 +10,8 @@ expect fun MapScreen(
     trucks: List<FoodTruck> = emptyList(),
     onTruckClick: (String) -> Unit = {},
     centerLatitude: Double? = null,
-    centerLongitude: Double? = null
+    centerLongitude: Double? = null,
+    onLocationResult: (Double, Double) -> Unit = { _, _ -> },
+    isPickerMode: Boolean = false,
+    onMapClick: (Double, Double) -> Unit = { _, _ -> }
 )

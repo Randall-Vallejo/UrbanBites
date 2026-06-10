@@ -16,62 +16,50 @@ class FirebaseService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d("FCM_DEBUG", "Nuevo Token: $token")
+        Log.d("FCM_DEBUG", "NUEVO TOKEN GENERADO: $token")
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        Log.d("FCM_DEBUG", "¡Mensaje recibido! De: ${message.from}")
         
-        // Si el mensaje trae una notificación, usamos esos datos
-        val title = message.notification?.title ?: message.data["title"] ?: "Notificación"
-        val body = message.notification?.body ?: message.data["body"] ?: "Tienes un mensaje nuevo"
+        // LOG CRUCIAL: Si ves esto en Logcat, el problema es la UI. Si NO lo ves, el problema es Firebase/Token.
+        Log.d("FCM_DEBUG", "¡¡MENSAJE RECIBIDO!!")
+        Log.d("FCM_DEBUG", "Payload Data: ${message.data}")
+        Log.d("FCM_DEBUG", "Payload Notification: ${message.notification?.body}")
+
+        val title = message.notification?.title ?: message.data["title"] ?: "UrbanBites"
+        val body = message.notification?.body ?: message.data["body"] ?: "¡Tienes una actualización!"
         
-        showNotification(title, body)
+        sendNotification(title, body)
     }
 
-    private fun showNotification(title: String, body: String) {
-        // ID v5 para coincidir con el Manifest y forzar banner flotante
+    private fun sendNotification(title: String, body: String) {
         val channelId = "urban_bites_channel_v5"
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+        // Aseguramos que el canal exista (doble verificación)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Urban Bites VIP",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Canal prioritario para banners flotantes"
-                enableLights(true)
-                enableVibration(true)
-                importance = NotificationManager.IMPORTANCE_HIGH
-                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
-            }
+            val channel = NotificationChannel(channelId, "Notificaciones VIP", NotificationManager.IMPORTANCE_HIGH)
             notificationManager.createNotificationChannel(channel)
         }
 
         val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("destination", "github")
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
-
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // Para que salga el banner arriba
             .setDefaults(NotificationCompat.DEFAULT_ALL)
-            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(pendingIntent)
 
-        Log.d("FCM_DEBUG", "Mostrando notificación: $title - $body")
         notificationManager.notify(System.currentTimeMillis().toInt(), notificationBuilder.build())
+        Log.d("FCM_DEBUG", "Notificación disparada al sistema.")
     }
 }

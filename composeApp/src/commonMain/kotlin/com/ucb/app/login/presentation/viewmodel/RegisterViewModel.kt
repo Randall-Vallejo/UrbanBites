@@ -2,6 +2,7 @@ package com.ucb.app.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ucb.app.core.session.UserSession
 import com.ucb.app.login.presentation.state.LoginEffect
 import com.ucb.app.login.presentation.state.RegisterEvent
 import com.ucb.app.login.presentation.state.RegisterUiState
@@ -46,7 +47,10 @@ class RegisterViewModel : ViewModel() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             delay(1500) // Simulación
-            // Aquí irá la lógica de Firebase Auth
+            
+            // Requerimiento: No mockear el nombre, usar el del registro
+            UserSession.updateSession(s.name, s.email)
+
             _state.update { it.copy(isLoading = false) }
             _effect.emit(LoginEffect.NavigateToHome)
         }

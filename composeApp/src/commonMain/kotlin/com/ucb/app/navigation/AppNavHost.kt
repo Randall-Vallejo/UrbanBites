@@ -10,6 +10,11 @@ import com.ucb.app.demo.presentation.screen.DemoFuncionalidadesScreen
 import com.ucb.app.home.presentation.screen.HomeScreen
 import com.ucb.app.home.presentation.screen.FoodTruckDetailScreen
 import com.ucb.app.home.presentation.screen.FavoritesScreen
+import com.ucb.app.home.presentation.screen.ProfileScreen
+import com.ucb.app.home.presentation.screen.NotificationSettingsScreen
+import com.ucb.app.home.presentation.screen.SettingsScreen
+import com.ucb.app.home.presentation.screen.LanguageScreen
+import com.ucb.app.home.presentation.screen.AddFoodTruckScreen
 import com.ucb.app.maps.presentation.screen.MapExploreScreen
 import com.ucb.app.login.presentation.screen.LoginScreen
 import com.ucb.app.login.presentation.screen.RegisterScreen
@@ -20,7 +25,8 @@ fun AppNavHost(
     destination: String? = null,
     onShowLocalNotification: () -> Unit = {},
     onRunWorker: () -> Unit = {},
-    fcmToken: String = ""
+    fcmToken: String = "",
+    onOpenSystemSettings: () -> Unit = {}
 ) {
     val navController = rememberNavController()
 
@@ -68,6 +74,9 @@ fun AppNavHost(
                 },
                 onNavigateToFavorites = {
                     navController.navigate(NavRoute.Favorites)
+                },
+                onNavigateToProfile = {
+                    navController.navigate(NavRoute.Profile)
                 }
             )
         }
@@ -79,6 +88,9 @@ fun AppNavHost(
                 },
                 onNavigateToFavorites = {
                     navController.navigate(NavRoute.Favorites)
+                },
+                onNavigateToProfile = {
+                    navController.navigate(NavRoute.Profile)
                 }
             )
         }
@@ -88,8 +100,47 @@ fun AppNavHost(
                     navController.navigate(NavRoute.Detail(name))
                 },
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToMap = { navController.navigate(NavRoute.Map) }
+                onNavigateToMap = { navController.navigate(NavRoute.Map) },
+                onNavigateToProfile = { navController.navigate(NavRoute.Profile) }
             )
+        }
+        composable<NavRoute.Profile> {
+            ProfileScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToFavorites = { navController.navigate(NavRoute.Favorites) },
+                onNavigateToHome = {
+                    navController.navigate(NavRoute.Home) {
+                        popUpTo(NavRoute.Home) { inclusive = true }
+                    }
+                },
+                onNavigateToMap = { navController.navigate(NavRoute.Map) },
+                onNavigateToNotifications = { navController.navigate(NavRoute.NotificationSettings) },
+                onNavigateToSettings = { navController.navigate(NavRoute.Settings) },
+                onNavigateToLanguage = { navController.navigate(NavRoute.Language) },
+                onNavigateToAddFoodTruck = {
+                    navController.navigate(NavRoute.AddFoodTruck)
+                },
+                onLogout = {
+                    navController.navigate(NavRoute.Login) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable<NavRoute.AddFoodTruck> {
+            AddFoodTruckScreen(onBack = { navController.popBackStack() })
+        }
+        composable<NavRoute.NotificationSettings> {
+            NotificationSettingsScreen(onBack = { navController.popBackStack() })
+        }
+        composable<NavRoute.Settings> {
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onOpenSystemSettings = onOpenSystemSettings
+            )
+        }
+        composable<NavRoute.Language> {
+            LanguageScreen(onBack = { navController.popBackStack() })
         }
         composable<NavRoute.Detail> { backStackEntry ->
             val detailRoute: NavRoute.Detail = backStackEntry.toRoute()
