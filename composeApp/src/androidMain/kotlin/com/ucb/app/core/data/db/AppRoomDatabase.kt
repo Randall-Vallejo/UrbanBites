@@ -6,12 +6,14 @@ import androidx.room.RoomDatabase
 import org.koin.core.context.GlobalContext
 
 actual fun getDatabaseBuilder(ctx: Any?): RoomDatabase.Builder<AppDatabase> {
-    // Magia: Si ctx es nulo, recuperamos el Context global que guardó Koin
+    // Recuperamos el Context de forma segura
     val context = (ctx as? Context) ?: GlobalContext.get().get<Context>()
 
-    val dbFile = context.getDatabasePath("dollar.db")
+    // Nombre único para forzar una base de datos limpia y estable
+    val dbFile = context.getDatabasePath("urbanbites_production_v1.db") 
+    
     return Room.databaseBuilder<AppDatabase>(
         context = context,
         name = dbFile.absolutePath
-    ).fallbackToDestructiveMigration() // Evita crashes al cambiar la versión a 2
+    ).fallbackToDestructiveMigration(true) // Limpia la DB si hay cambios de esquema
 }

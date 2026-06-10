@@ -10,5 +10,6 @@ data class FavoriteTruckEntity(
     val category: String,
     val rating: String,
     val distance: String,
-    val isOpen: Boolean
+    val isOpen: Boolean,
+    val imageUrl: String = ""
 )

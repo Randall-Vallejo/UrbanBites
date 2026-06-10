@@ -1,8 +1,9 @@
 package com.ucb.app.firebase.presentation.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,8 +21,10 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 expect fun RequestNotificationPermission()
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationScreen(
+    onBack: () -> Unit,
     viewModel: NotificationViewModel = koinViewModel()
 ) {
     val token by viewModel.token.collectAsState()
@@ -31,99 +34,111 @@ fun NotificationScreen(
 
     RequestNotificationPermission()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        Spacer(modifier = Modifier.height(40.dp))
-        
-        // MENSAJE DESDE FIREBASE REMOTE CONFIG
-        Card(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Column(modifier = Modifier.padding(20.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Mensaje de la Nube:", color = Color.White, fontSize = 12.sp)
-                Text(
-                    text = cloudMessage,
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-            }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Notificaciones") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+                    }
+                }
+            )
         }
-
-        Text(
-            text = "Realtime Database Chat",
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // CAMPO DE TEXTO PARA ESCRIBIR EL MENSAJE
-        OutlinedTextField(
-            value = messageToSend,
-            onValueChange = { viewModel.onMessageChange(it) },
-            label = { Text("Escribe un mensaje para Firebase") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = { viewModel.sendCustomMessage() },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
-            enabled = messageToSend.isNotEmpty()
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            Text("Enviar Mensaje Escrito")
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (token.isEmpty()) {
-            CircularProgressIndicator()
-        } else {
+            // MENSAJE DESDE FIREBASE REMOTE CONFIG
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        clipboardManager.setText(AnnotatedString(token))
-                    },
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                )
+                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(20.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Mensaje de la Nube:", color = Color.White, fontSize = 12.sp)
                     Text(
-                        text = "TU TOKEN FCM (Click para copiar):",
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Text(
-                        text = token,
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 1
+                        text = cloudMessage,
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Realtime Database Chat",
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = { 
-                viewModel.fetchToken()
-                viewModel.fetchRemoteConfig()
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Actualizar Todo")
+            // CAMPO DE TEXTO PARA ESCRIBIR EL MENSAJE
+            OutlinedTextField(
+                value = messageToSend,
+                onValueChange = { viewModel.onMessageChange(it) },
+                label = { Text("Escribe un mensaje para Firebase") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = { viewModel.sendCustomMessage() },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                enabled = messageToSend.isNotEmpty()
+            ) {
+                Text("Enviar Mensaje Escrito")
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (token.isEmpty()) {
+                CircularProgressIndicator()
+            } else {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            clipboardManager.setText(AnnotatedString(token))
+                        },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "TU TOKEN FCM (Click para copiar):",
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            text = token,
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 1
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { 
+                    viewModel.fetchToken()
+                    viewModel.fetchRemoteConfig()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Actualizar Todo")
+            }
         }
     }
 }

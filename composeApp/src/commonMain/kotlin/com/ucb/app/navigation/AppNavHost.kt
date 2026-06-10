@@ -15,6 +15,8 @@ import com.ucb.app.home.presentation.screen.NotificationSettingsScreen
 import com.ucb.app.home.presentation.screen.SettingsScreen
 import com.ucb.app.home.presentation.screen.LanguageScreen
 import com.ucb.app.home.presentation.screen.AddFoodTruckScreen
+import com.ucb.app.home.presentation.screen.TermsOfServiceScreen
+import com.ucb.app.firebase.presentation.screen.NotificationScreen
 import com.ucb.app.maps.presentation.screen.MapExploreScreen
 import com.ucb.app.login.presentation.screen.LoginScreen
 import com.ucb.app.login.presentation.screen.RegisterScreen
@@ -77,6 +79,9 @@ fun AppNavHost(
                 },
                 onNavigateToProfile = {
                     navController.navigate(NavRoute.Profile)
+                },
+                onNavigateToNotifications = {
+                    navController.navigate(NavRoute.Notifications)
                 }
             )
         }
@@ -120,6 +125,9 @@ fun AppNavHost(
                 onNavigateToAddFoodTruck = {
                     navController.navigate(NavRoute.AddFoodTruck)
                 },
+                onNavigateToTerms = {
+                    navController.navigate(NavRoute.TermsOfService)
+                },
                 onLogout = {
                     navController.navigate(NavRoute.Login) {
                         popUpTo(0) { inclusive = true }
@@ -141,6 +149,12 @@ fun AppNavHost(
         }
         composable<NavRoute.Language> {
             LanguageScreen(onBack = { navController.popBackStack() })
+        }
+        composable<NavRoute.TermsOfService> {
+            TermsOfServiceScreen(onBack = { navController.popBackStack() })
+        }
+        composable<NavRoute.Notifications> {
+            NotificationScreen(onBack = { navController.popBackStack() })
         }
         composable<NavRoute.Detail> { backStackEntry ->
             val detailRoute: NavRoute.Detail = backStackEntry.toRoute()

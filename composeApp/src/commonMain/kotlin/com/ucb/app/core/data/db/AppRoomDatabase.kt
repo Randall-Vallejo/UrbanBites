@@ -14,7 +14,7 @@ import com.ucb.app.home.data.db.entity.FavoriteTruckEntity
         DemoEntity::class,
         FavoriteTruckEntity::class
     ],
-    version = 5
+    version = 6
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -23,7 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun favoriteDao(): FavoriteDao
 }
 
-// The Room compiler generates the `actual` implementations.
+// El compilador de Room genera las implementaciones `actual`.
 @Suppress("NO_ACTUAL_FOR_EXPECT")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
     override fun initialize(): AppDatabase

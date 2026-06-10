@@ -3,33 +3,32 @@ package com.ucb.app.home.presentation.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ucb.app.home.domain.model.FoodTruck
+import com.ucb.app.core.util.toOneDecimal
 import com.ucb.app.home.domain.model.MenuDish
 import com.ucb.app.home.domain.model.UserReview
 import com.ucb.app.home.presentation.viewmodel.HomeViewModel
 import com.ucb.app.maps.presentation.screen.MapScreen
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -41,14 +40,32 @@ fun FoodTruckDetailScreen(
     val uiState by viewModel.state.collectAsState()
     val favorites by viewModel.favorites.collectAsState()
     
-    // Buscamos el truck real en el estado que viene de Firebase
     val truck = uiState.foodTrucks.find { it.name == truckName }
-    
-    // Verificamos si este truck está en la lista de favoritos de Room
     val isFavorite = favorites.any { it.name == truckName }
 
     val orangeColor = Color(0xFFFF5722)
-    val redColor = Color(0xFFE64A19)
+
+    // Lógica de Estado Abierto/Cerrado (Requerimiento 3 - TIEMPO REAL)
+    val isOpenRealTime = remember(truck) {
+        if (truck == null || truck.openingTime.isBlank() || truck.closingTime.isBlank()) true
+        else {
+            try {
+                val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                val currentTimeMinutes = now.hour * 60 + now.minute
+                
+                val openParts = truck.openingTime.split(":")
+                val closeParts = truck.closingTime.split(":")
+                val openTimeMinutes = openParts[0].toInt() * 60 + openParts[1].toInt()
+                val closeTimeMinutes = closeParts[0].toInt() * 60 + closeParts[1].toInt()
+                
+                if (closeTimeMinutes < openTimeMinutes) { // Horario nocturno (ej: 18:00 - 02:00)
+                    currentTimeMinutes >= openTimeMinutes || currentTimeMinutes <= closeTimeMinutes
+                } else {
+                    currentTimeMinutes in openTimeMinutes..closeTimeMinutes
+                }
+            } catch (e: Exception) { true }
+        }
+    }
 
     if (truck == null) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -65,9 +82,20 @@ fun FoodTruckDetailScreen(
         return
     }
 
+    // Calcular Rating Real dinámicamente (Requerimiento 2)
+    val averageRating = remember(truck.userReviews) {
+        if (truck.userReviews.isEmpty()) truck.rating.toDoubleOrNull() ?: 0.0
+        else truck.userReviews.map { it.stars }.average()
+    }
+
     Scaffold(
         bottomBar = {
-            DetailBottomActions(orangeColor)
+            DetailBottomActions(
+                orange = orangeColor,
+                lat = truck.latitude,
+                lng = truck.longitude,
+                name = truck.name
+            )
         }
     ) { padding ->
         LazyColumn(
@@ -76,7 +104,6 @@ fun FoodTruckDetailScreen(
                 .padding(padding)
                 .background(Color.White)
         ) {
-            // Header Image
             item {
                 Box(modifier = Modifier.fillMaxWidth().height(250.dp).background(Color.LightGray)) {
                     if (truck.imageUrl.isNotBlank()) {
@@ -85,14 +112,8 @@ fun FoodTruckDetailScreen(
                             contentDescription = truck.name,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop,
-                            onLoading = {
-                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    CircularProgressIndicator(color = orangeColor, strokeWidth = 2.dp)
-                                }
-                            },
-                            onFailure = {
-                                Icon(Icons.Default.Restaurant, null, Modifier.align(Alignment.Center).size(60.dp), Color.White)
-                            }
+                            onLoading = { Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = orangeColor, strokeWidth = 2.dp) } },
+                            onFailure = { Icon(Icons.Default.Restaurant, null, Modifier.align(Alignment.Center).size(60.dp), Color.White) }
                         )
                     } else {
                         Icon(Icons.Default.Restaurant, null, Modifier.align(Alignment.Center).size(60.dp), Color.White)
@@ -102,176 +123,113 @@ fun FoodTruckDetailScreen(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        IconButton(
-                            onClick = onBack,
-                            modifier = Modifier.background(Color.White.copy(0.7f), CircleShape)
-                        ) {
+                        IconButton(onClick = onBack, modifier = Modifier.background(Color.White.copy(0.7f), CircleShape)) {
                             Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Atrás", tint = Color.Black)
                         }
-                        
-                        IconButton(
-                            onClick = { viewModel.toggleFavorite(truck) },
-                            modifier = Modifier.background(Color.White.copy(0.7f), CircleShape)
-                        ) {
-                            Icon(
-                                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder, 
-                                contentDescription = "Favorito", 
-                                tint = if (isFavorite) Color.Red else Color.Gray
-                            )
+                        IconButton(onClick = { viewModel.toggleFavorite(truck) }, modifier = Modifier.background(Color.White.copy(0.7f), CircleShape)) {
+                            Icon(imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder, tint = if (isFavorite) Color.Red else Color.Gray, contentDescription = null)
                         }
                     }
 
-                    if (truck.isOpen) {
-                        Surface(
-                            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-                            color = Color(0xFF2E7D32),
-                            shape = RoundedCornerShape(20.dp)
-                        ) {
-                            Row(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Box(Modifier.size(8.dp).background(Color.White, CircleShape))
-                                Spacer(Modifier.width(8.dp))
-                                Text("Abierto ahora", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                            }
+                    // Indicador Dinámico de Estado (Requerimiento 3)
+                    Surface(
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                        color = if (isOpenRealTime) Color(0xFF2E7D32) else Color.Red,
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Row(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Box(Modifier.size(8.dp).background(Color.White, CircleShape))
+                            Spacer(Modifier.width(8.dp))
+                            Text(if (isOpenRealTime) "Abierto ahora" else "Cerrado", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
             }
 
-            // Info Section
             item {
                 Column(Modifier.padding(16.dp)) {
                     Text(truck.name, fontSize = 28.sp, fontWeight = FontWeight.Bold)
                     Text(truck.description, color = Color.Gray, fontSize = 14.sp)
-                    
                     Spacer(Modifier.height(16.dp))
-                    
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(20.dp))
-                        Text(" ${truck.rating}", fontWeight = FontWeight.Bold)
-                        Text(" (${truck.reviewsCount} reseñas)", color = Color.Gray)
+                        Text(" ${averageRating.toOneDecimal()}", fontWeight = FontWeight.Bold)
+                        Text(" (${truck.userReviews.size} reseñas)", color = Color.Gray)
                         Spacer(Modifier.width(12.dp))
                         Surface(color = Color(0xFFEEEEEE), shape = RoundedCornerShape(8.dp)) {
                             Text(truck.category, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), fontSize = 12.sp)
                         }
                     }
-
                     Spacer(Modifier.height(12.dp))
-
                     InfoRow(Icons.Default.LocationOn, "Cochabamba, Bolivia")
-                    val openTime = if (truck.openingTime.isNotBlank()) truck.openingTime else "10:00 AM"
-                    val closeTime = if (truck.closingTime.isNotBlank()) truck.closingTime else "10:00 PM"
-                    InfoRow(Icons.Default.AccessTime, "$openTime - $closeTime")
+                    InfoRow(Icons.Default.AccessTime, "${truck.openingTime} - ${truck.closingTime}")
                     InfoRow(Icons.Default.NearMe, "${truck.distance} de distancia")
                 }
             }
 
-            // Promo Section
+            // Sección de Reseñas Reales e Interactivas (Requerimiento 3)
             item {
-                Column(Modifier.padding(horizontal = 16.dp)) {
-                    if (truck.isPromo) {
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = Color.Transparent,
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Box(Modifier.background(Brush.horizontalGradient(listOf(Color(0xFFFF5252), Color(0xFFFF8A65)))).padding(16.dp)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.TrendingUp, null, tint = Color.White)
-                                    Spacer(Modifier.width(12.dp))
-                                    Column {
-                                        Text(if (truck.promoTitle.isNotBlank()) truck.promoTitle else "¡Promoción Especial!", color = Color.White, fontWeight = FontWeight.Bold)
-                                        Text(truck.promoDescription, color = Color.White.copy(0.9f), fontSize = 12.sp)
-                                    }
-                                }
-                            }
-                        }
-                        Spacer(Modifier.height(12.dp))
-                    }
-
-                    if (truck.comboTitle.isNotBlank()) {
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = Color(0xFFFFF9C4),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.EmojiEvents, null, tint = orangeColor)
-                                Spacer(Modifier.width(12.dp))
-                                Column {
-                                    Text(truck.comboTitle, fontWeight = FontWeight.Bold)
-                                    Text(truck.comboDescription, fontSize = 12.sp, color = Color.DarkGray)
-                                }
-                            }
-                        }
-                        Spacer(Modifier.height(12.dp))
-                    }
+                ReviewInputSection(orangeColor) { stars, comment ->
+                    viewModel.addReview(truck.id, stars, comment)
                 }
             }
 
-            // Gallery Section
-            item {
-                Text("Galería", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
-                LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(3) {
-                        Box(Modifier.size(150.dp).clip(RoundedCornerShape(16.dp)).background(Color(0xFFEEEEEE))) {
-                            if (truck.imageUrl.isNotBlank()) {
-                                KamelImage(
-                                    resource = asyncPainterResource(truck.imageUrl),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop,
-                                    onLoading = { CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).size(20.dp), strokeWidth = 2.dp) },
-                                    onFailure = { Icon(Icons.Default.Image, null, Modifier.align(Alignment.Center), Color.Gray) }
-                                )
-                            } else {
-                                Icon(Icons.Default.Image, null, Modifier.align(Alignment.Center), Color.Gray)
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Menu Section
-            if (truck.menu.isNotEmpty()) {
-                item {
-                    Text("Menú destacado", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
-                }
-                items(truck.menu) { item ->
-                    MenuItemRow(item)
-                }
-            }
-
-            // Reviews Section
             if (truck.userReviews.isNotEmpty()) {
-                item {
-                    Text("Reseñas de clientes", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
-                }
-                items(truck.userReviews) { review ->
-                    ReviewCard(review)
-                }
+                item { Text("Opiniones reales de la comunidad", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp)) }
+                items(truck.userReviews.reversed()) { review -> ReviewCard(review) }
             }
 
-            // Location Section
             item {
-                Text("Ubicación", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                ) {
-                    MapScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        centerLatitude = truck.latitude,
-                        centerLongitude = truck.longitude,
-                        trucks = listOf(truck)
-                    )
+                Text("Ubicación exacta", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
+                Box(Modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth().height(200.dp).clip(RoundedCornerShape(16.dp))) {
+                    MapScreen(modifier = Modifier.fillMaxSize(), centerLatitude = truck.latitude, centerLongitude = truck.longitude, trucks = listOf(truck))
                 }
             }
         }
     }
 }
+
+@Composable
+fun ReviewInputSection(color: Color, onSendReview: (Int, String) -> Unit) {
+    var stars by remember { mutableStateOf(5) }
+    var comment by remember { mutableStateOf("") }
+    
+    Card(modifier = Modifier.padding(16.dp).fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))) {
+        Column(Modifier.padding(16.dp)) {
+            Text("¡Danos tu opinión!", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Row(Modifier.padding(vertical = 8.dp)) {
+                repeat(5) { index ->
+                    IconButton(onClick = { stars = index + 1 }, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Default.Star, null, tint = if (index < stars) Color(0xFFFFB300) else Color.LightGray)
+                    }
+                }
+            }
+            OutlinedTextField(
+                value = comment,
+                onValueChange = { comment = it },
+                placeholder = { Text("Escribe tu experiencia aquí...") },
+                modifier = Modifier.fillMaxWidth().height(100.dp),
+                shape = RoundedCornerShape(12.dp)
+            )
+            Button(
+                onClick = { 
+                    if (comment.isNotBlank()) {
+                        onSendReview(stars, comment)
+                        comment = ""
+                        stars = 5
+                    }
+                },
+                modifier = Modifier.align(Alignment.End).padding(top = 12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = color)
+            ) {
+                Text("Publicar reseña")
+            }
+        }
+    }
+}
+
+@Composable
+expect fun DetailBottomActions(orange: Color, lat: Double, lng: Double, name: String)
 
 @Composable
 fun InfoRow(icon: ImageVector, text: String) {
@@ -279,22 +237,6 @@ fun InfoRow(icon: ImageVector, text: String) {
         Icon(icon, null, tint = Color(0xFFFF8A65), modifier = Modifier.size(16.dp))
         Spacer(Modifier.width(8.dp))
         Text(text, fontSize = 14.sp, color = Color.DarkGray)
-    }
-}
-
-@Composable
-fun MenuItemRow(item: MenuDish) {
-    Surface(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp).fillMaxWidth(),
-        color = Color.White,
-        shape = RoundedCornerShape(12.dp),
-        tonalElevation = 1.dp,
-        shadowElevation = 1.dp
-    ) {
-        Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(item.name, fontWeight = FontWeight.Medium)
-            Text("Bs. ${item.price}", color = Color(0xFFE64A19), fontWeight = FontWeight.Bold)
-        }
     }
 }
 
@@ -307,40 +249,10 @@ fun ReviewCard(review: UserReview) {
     ) {
         Column(Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(review.userName, fontWeight = FontWeight.Bold)
-                Row {
-                    repeat(review.stars) {
-                        Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(16.dp))
-                    }
-                }
+                Text(review.userName.ifBlank { "Anónimo" }, fontWeight = FontWeight.Bold)
+                Row { repeat(review.stars) { Icon(Icons.Default.Star, null, tint = Color(0xFFFFB300), modifier = Modifier.size(16.dp)) } }
             }
             Text(review.comment, fontSize = 13.sp, color = Color.Gray, modifier = Modifier.padding(top = 8.dp))
-        }
-    }
-}
-
-@Composable
-fun DetailBottomActions(orange: Color) {
-    Row(Modifier.padding(16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        Button(
-            onClick = {},
-            modifier = Modifier.weight(1f).height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2D5A47)),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Icon(Icons.Default.NearMe, null)
-            Spacer(Modifier.width(8.dp))
-            Text("Cómo llegar")
-        }
-        OutlinedButton(
-            onClick = {},
-            modifier = Modifier.weight(1f).height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFF8A65))
-        ) {
-            Icon(Icons.Default.Share, null, tint = Color(0xFFFF8A65))
-            Spacer(Modifier.width(8.dp))
-            Text("Compartir", color = Color(0xFFFF8A65))
         }
     }
 }
